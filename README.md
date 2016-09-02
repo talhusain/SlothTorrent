@@ -10,4 +10,4 @@ Project Team Members:
 - Juan, _role_
 - Tyler, _role_
 
-Get [shwifty](https://www.youtube.com/watch?v=4ctK1aoWuqY).
+Get [schwifty](https://www.youtube.com/watch?v=4ctK1aoWuqY).
