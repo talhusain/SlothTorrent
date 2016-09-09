@@ -1,15 +1,12 @@
 # __Project Title__  :tada: :tada:
 <br>
-Maybe doing something with game stats; we're not sure yet lol.
+A web-based torrent client.
 
-Project Team Members:
-* Thamer _(Developer)_
-* Adam _(Developer)_
-* James _(Developer)_
-* Josh _(Developer)_
-* Zach _(Developer)_
-* Juan _(Developer)_
-* Sam _(Developer)_
-* Tyler _(Developer)_
-
-Get [schwifty](https://www.youtube.com/watch?v=4ctK1aoWuqY).
+* Thamer ([talhusain](https://www.github.com/talhusain))
+* Adam ([BadStreff](https://www.github.com/BadStreff))
+* James ([squidmin](https://www.github.com/squidmin))
+* Josh ([JaBase](https://www.github.com/JaBase))
+* Zach ([CelloMan012](https://www.github.com/CelloMan012))
+* Juan ([JJ-Gonz](https://www.github.com/JJ-Gonz))
+* Sam ([samliska](https://www.github.com/samliska))
+* Patrick ([lakavas](https://www.github.com/lakavas))
