@@ -1,5 +1,4 @@
 # Project Title :squirrel:
-<br>
 A web-based torrent client.
 
 #### Developers
@@ -36,9 +35,12 @@ Tyler ([I can't find Tyler's GitHub.](https://www.youtube.com/watch?v=dQw4w9WgXc
     * Load plugins
 * `front-end-admin-controller`
 * `front-end-index-controller`
+
 ---
+
 #### Suggested sources for design patterns :sparkles: :eyes:
 * [github.com/faif/python-patterns](https://github.com/faif/python-patterns)
 
 ---
+
 Be sure to check out [AWS](https://aws.amazon.com/training/?nc2=h_l2_tr), [Docker](https://docs.docker.com/engine/understanding-docker/), and [Jenkins](https://jenkins.io/doc/).
