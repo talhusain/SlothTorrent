@@ -9,7 +9,7 @@ A web-based torrent client.
 * Zach ([CelloMan012](https://www.github.com/CelloMan012))
 * Juan ([JJ-Gonz](https://www.github.com/JJ-Gonz))
 * Sam ([samliska](https://www.github.com/samliska))
-* Patrick ([lakavas](https://www.github.com/lakavas))
+* Patrick ([Iakavas](https://www.github.com/Iakavas))
 * Tyler ([I can't find Tyler.](https://www.youtube.com/watch?v=4ctK1aoWuqY))
 <br>
 
