@@ -4,7 +4,7 @@ NOTE: This is just an example of how I might intuitively go about beginning the 
         I welcome constructive criticism.
 
 ALSO NOTE: Random, but I just discovered that the built-in function dir(m) returns a sorted list of strings containing 
-             the names of all the modules, variables, and functions that are defined in a module.
+             the names of all the modules, variables, and functions that are defined in a Python module m.
 
 FILE: torrent.py
 CLASS PROVIDED: Torrent
@@ -23,7 +23,7 @@ CONSTRUCTOR for the Torrent class:
 MODIFICATION MEMBER FUNCTIONS for the Torrent class:
   set_status(self, status)
 
-INVARIANT for the sequence ADT:
+INVARIANT for the Torrent class:
   <enumerate constraints to be included in the class invariant>
 """
 
@@ -65,3 +65,5 @@ class Torrent:
 
     def get_info(self):
         return self.__info
+
+

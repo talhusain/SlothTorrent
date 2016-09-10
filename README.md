@@ -1,36 +1,44 @@
-# __Project Title__  :squirrel:
+# Project Title :squirrel:
 <br>
 A web-based torrent client.
 
-* Thamer ([talhusain](https://www.github.com/talhusain))
-* Adam ([BadStreff](https://www.github.com/BadStreff))
-* James ([squidmin](https://www.github.com/squidmin))
-* Josh ([JaBase](https://www.github.com/JaBase))
-* Zach ([CelloMan012](https://www.github.com/CelloMan012))
-* Juan ([JJ-Gonz](https://www.github.com/JJ-Gonz))
-* Sam ([samliska](https://www.github.com/samliska))
-* Patrick ([Iakavas](https://www.github.com/Iakavas))
-* Tyler ([I can't find Tyler.](https://www.youtube.com/watch?v=4ctK1aoWuqY))
-<br>
+#### Developers
+Thamer ([talhusain](https://www.github.com/talhusain)) <br>
+Adam ([BadStreff](https://www.github.com/BadStreff)) <br>
+James ([squidmin](https://www.github.com/squidmin)) <br>
+Josh ([JaBase](https://www.github.com/JaBase)) <br>
+Zach ([CelloMan012](https://www.github.com/CelloMan012)) <br>
+Juan ([JJ-Gonz](https://www.github.com/JJ-Gonz)) <br>
+Sam ([samliska](https://www.github.com/samliska)) <br>
+Patrick ([Iakavas](https://www.github.com/Iakavas)) <br>
+Tyler ([I can't find Tyler's GitHub.](https://www.youtube.com/watch?v=dQw4w9WgXcQ))
 
-#### Suggested modules :file_folder: :open_file_folder: :page_facing_up:
-* Torrent
+---
+
+#### (Suggested) Modules :file_folder: :open_file_folder: :page_facing_up:
+* `torrent`
   * Member attributes:
-    * _Status (e.g., paused, downloading, etc.)_
-    * _Path_
-    * _Name_
-    * _Size_
-    * _Info_
-    * _Tracker locations_
+    * `status` (e.g., paused, downloading, etc.)
+    * `path`
+    * `name`
+    * `size`
+    * `info`
+    * `tracker locations`
   * Member functions:
-    * _At least one non-default constructor (at present)_
-    * _Standard setters and getters_
-* Plugin
+    * At least one non-default constructor (at present), `__init__(self, ...)`
+    * Standard setters and getters
+* `plugin`
   * Responsibilities:
-    * _Generating lists of plugins_
-    * _Abstract class for others to implement_
-* Loader
+    * Generating lists of plugins
+    * Abstract class for others to implement
+* `loader`
   * Responsibilities:
-    * _Load plugins_
-* Front end admin controller
-* Front end index controller
+    * Load plugins
+* `front-end-admin-controller`
+* `front-end-index-controller`
+---
+#### Suggested sources for design patterns :sparkles: :eyes:
+* [github.com/faif/python-patterns](https://github.com/faif/python-patterns)
+
+---
+Be sure to check out [AWS](https://aws.amazon.com/training/?nc2=h_l2_tr), [Docker](https://docs.docker.com/engine/understanding-docker/), and [Jenkins](https://jenkins.io/doc/).
