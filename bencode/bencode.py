@@ -50,3 +50,47 @@ class Bencode(object):
         pass
     def decode(data):
         pass
+    def _tokenize(data):
+        """ Returns the bencode data in a tokenized list. """
+
+        if data is None or data == b'':
+            return []
+
+        ret = []
+        data = [bytes([b]) for b in data]
+
+        for index, b in enumerate(data, start=0):
+            print(index)
+            print(b)
+            print(b''.join(data[index:]))
+
+            if b == b'd':
+                return [b'd'] + Bencode._tokenize(b''.join(data[index+1:]))
+
+            elif b == b'i':
+                offset = 1
+                while data[offset] != b'e':
+                    offset += 1
+                return [b'i'] + [b''.join(data[1:offset])] + Bencode._tokenize(b''.join(data[offset:]))
+
+            elif b == b'l':
+                return [b'l'] + Bencode._tokenize(b''.join(data[index+1:]))
+
+            elif b.isdigit():
+                offset = 1
+                while data[offset].isdigit():
+                    offset += 1
+                val = int(b''.join(data[:offset]).decode())
+                return [b''.join(data[:offset])] + [b':'] + [b''.join(data[offset+1:offset+val+1])] + Bencode._tokenize(b''.join(data[offset+val+1:]))
+
+            elif b == b'e':
+                try:
+                    return [b'e'] + Bencode._tokenize(b''.join(data[index+1:]))
+                except:
+                    return [b'e']
+
+            elif b == b':':
+                return [b':'] + Bencode._tokenize(b''.join(data[index+1:]))
+
+            else:
+                raise ValueError

@@ -132,6 +132,7 @@ class TestDecode(unittest.TestCase):
 
         self.n = bencode.Bencode.decode(b"i0e")
         self.assertEqual(self.n, 0)
+
     def test_dict(self):
         """ Test dictionaries are decoded correctly. """
 
@@ -179,6 +180,64 @@ class TestDecode(unittest.TestCase):
 
         self.n = bencode.Bencode.decode("ld4:spaml1:a1:beee")
         self.assertEqual(self.n, [{b"spam":[b"a", b"b"]}])
+
+
+class TestTokenize(unittest.TestCase):
+
+    def test_string(self):
+        """ Test strings are tokenized correctly. """
+    
+        self.n = bencode.Bencode._tokenize(b"4:test")
+        self.assertEqual(self.n, [b"4", b":", b"test"])
+
+    def test_integer(self):
+        """ Test integers are tokenized correctly. """
+    
+        self.n = bencode.Bencode._tokenize(b"i3e")
+        self.assertEqual(self.n, [b"i", b"3", b"e"])
+
+    def test_negative_integer(self):
+        """ Test negative integers are tokenized correctly. """
+    
+        self.n = bencode.Bencode._tokenize(b"i-3e")
+        self.assertEqual(self.n, [b"i", b"-3", b"e"])
+
+    def test_zero(self):
+        """ Test zeros are tokenized correctly. """
+    
+        self.n = bencode.Bencode._tokenize(b"i0e")
+        self.assertEqual(self.n, [b"i", b"0", b"e"])
+
+    def test_list(self):
+        """ Test lists are tokenized correctly. """
+
+        self.n = bencode.Bencode._tokenize(b"l12:testtesttest4:asdfi3ee")
+        self.assertEqual(self.n, [b'l', b'12', b':', b'testtesttest', b'4', b':', b'asdf', b'i', b'3', b'e', b'e'])
+
+    def test_empty_list(self):
+        """ Test empty lists are tokenized correctly. """
+
+        self.n = bencode.Bencode._tokenize(b"le")
+        self.assertEqual(self.n, [b'l', b'e'])
+
+    def test_dict(self):
+        """ Test dictionaries are tokenized correctly. """
+
+        self.n = bencode.Bencode._tokenize(b"d3:bar4:spam3:fooi42ee")
+        self.assertEqual(self.n, [b'd', b'3', b':', b'bar', b'4', b':', b'spam', b'3', b':', b'foo', b'i', b'42', b'e', b'e'])
+
+    def test_empty_dict(self):
+        """ Test empty dictionaries are tokenized correctly. """
+
+        self.n = bencode.Bencode._tokenize(b"de")
+        self.assertEqual(self.n, [b'd', b'e'])
+
+    def test_malformed_data(self):
+        """ Test bad data raises an exception. """
+
+        with self.assertRaises(ValueError):
+            bencode.Bencode._tokenize(b"asdfasdfifniubcbiufdcnlsakjcabfuqiwegfqwhbcalsdcalsdkf")
+
 
 if __name__ == '__main__':
     unittest.main()
