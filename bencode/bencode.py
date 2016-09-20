@@ -2,6 +2,7 @@
 Bencoding
 
 Bencoding is a way to specify and organize data in a terse format. It supports the following types: byte strings, integers, lists, and dictionaries.
+
 Byte Strings
 
 Byte strings are encoded as follows: <string length encoded in base ten ASCII>:<string data>

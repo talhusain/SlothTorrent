@@ -3,10 +3,14 @@ FILE: torrent.py
 CLASS PROVIDED: Torrent
 """
 
+# SOME STUFF ABOUT NAMING CONVENTIONS MIGHT GET BROUGHT UP IN THE SLACK CHANNEL SOON.
+
+import bencode.bencode
+
 class Torrent(object):
 
     def __init__(self, torrent_path, directory='', port=55308, download_all=False, visualizer=None):
-        torrent_dict = tparser.bdecode_file(torrent_path)
+        torrent_dict = bencode.decode(torrent_path)    # TRYING TO PORT, STOPPED HERE. WILL CONTINUE LATER. DON'T JUDGE ME.   - James
         self.torrent_dict = torrent_dict
         self.peer_dict = {}
         self.peer_ips = []
