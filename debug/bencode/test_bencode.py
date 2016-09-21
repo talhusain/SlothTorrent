@@ -1,5 +1,5 @@
 import unittest
-import bencode
+from . import bencode
 
 class TestEncode(unittest.TestCase):
 

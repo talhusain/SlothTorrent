@@ -1,1 +1,1 @@
-__all__ = ['bencode', 'testbencode']
+__all__ = ['bencode']
