@@ -33,7 +33,7 @@ class TestEncode(unittest.TestCase):
         self.n = bencode.Bencode.encode(0)
         self.assertEqual(self.n, b"i0e")
 
-    # @unittest.skip("To be implemented later")
+    @unittest.skip("To be implemented later")
     def test_negative_zero(self):
         """ Test encoding negative zero raises an exception. """
 

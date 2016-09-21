@@ -43,14 +43,33 @@ Keys must be strings and appear in sorted order (sorted as raw strings, not alph
     Example: de represents an empty dictionary {}
 '''
 
+import itertools
+
 class Bencode(object):
     '''
     All strings are expected to be byte strings. ie: b'test' not 'test'
     '''
     def encode(data):
-        pass
+        if isinstance(data, int):
+            return b"i" + str(data).encode() + b"e"
+        elif isinstance(data, bytes):
+            return str(len(data)).encode() + b":" + data
+        elif isinstance(data, str):
+            return Bencode.encode(data.encode("ascii"))
+        elif isinstance(data, list):
+            return b"l" + b"".join(map(Bencode.encode, data)) + b"e"
+        elif isinstance(data, dict):
+            if all(isinstance(i, bytes) for i in data.keys()):
+                items = list(data.items())
+                items.sort()
+                return b"d" + b"".join(map(Bencode.encode, itertools.chain(*items))) + b"e"
+            else:
+                raise ValueError("dict keys should be bytes")
+        raise ValueError("Allowed types: int, bytes, list, dict; not %s", type(data))
+
     def decode(data):
         pass
+
     def _tokenize(data):
         """ Returns the bencode data in a tokenized list. """
 
