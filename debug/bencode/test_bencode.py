@@ -6,13 +6,13 @@ class TestEncode(unittest.TestCase):
     def test_string(self):
         """ Test strings are encoded correctly. """
 
-        self.n = bencode.Bencode.encode("test")
+        self.n = bencode.Bencode.encode(b"test")
         self.assertEqual(self.n, b"4:test")
 
     def test_empty__string(self):
         """ Test empty strings are encoded correctly. """
     
-        self.n = bencode.Bencode.encode("")
+        self.n = bencode.Bencode.encode(b"")
         self.assertEqual(self.n, b"0:")
 
     def test_integer(self):
@@ -114,7 +114,7 @@ class TestDecode(unittest.TestCase):
         self.n = bencode.Bencode.decode(b"i42e")
         self.assertEqual(self.n, 42)
 
-    # @unittest.skip("To be implemented later")
+    @unittest.skip("To be implemented later")
     def test_integer_for_leading_zeros(self):
         """ Test integers with a leading zero raise an exception. """
 
@@ -142,7 +142,7 @@ class TestDecode(unittest.TestCase):
     def test_empty_dict(self):
         """ Test empty dictionaries are decoded correctly. """
 
-        self.n = bencode.Bencode.decode("de")
+        self.n = bencode.Bencode.decode(b"de")
         self.assertEqual(self.n, {})
 
     def test_nested_dicts(self):
@@ -160,25 +160,25 @@ class TestDecode(unittest.TestCase):
     def test_empty_list(self):
         """ Test empty lists are decoded correctly. """
 
-        self.n = bencode.Bencode.decode("le")
+        self.n = bencode.Bencode.decode(b"le")
         self.assertEqual(self.n, [])
 
     def test_nested_lists(self):
         """ Test nested lists are decoded correctly. """
 
-        self.n = bencode.Bencode.decode("l4:spam4:eggsli3eee")
+        self.n = bencode.Bencode.decode(b"l4:spam4:eggsli3eee")
         self.assertEqual(self.n, [b"spam", b"eggs", [3]])
 
     def test_list_inside_dict(self):
         """ Test lists inside dictionaries are decoded correctly. """
 
-        self.n = bencode.Bencode.decode("d4:spaml1:a1:bee")
+        self.n = bencode.Bencode.decode(b"d4:spaml1:a1:bee")
         self.assertEqual(self.n, {b"spam":[b"a", b"b"]})
 
     def test_dict_inside_list(self):
         """ Test dictionaries inside lists are decoded correctly. """
 
-        self.n = bencode.Bencode.decode("ld4:spaml1:a1:beee")
+        self.n = bencode.Bencode.decode(b"ld4:spaml1:a1:beee")
         self.assertEqual(self.n, [{b"spam":[b"a", b"b"]}])
 
 

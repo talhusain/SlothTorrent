@@ -68,10 +68,51 @@ class Bencode(object):
         raise ValueError("Allowed types: int, bytes, list, dict; not %s", type(data))
 
     def decode(data):
-        pass
+        # print("decode(): ", data)
+        if not isinstance(data, list):
+            data = Bencode._tokenize(data)
+        if data[0] == b'i':
+            return int(data[1].decode())
+        elif data[0] == b'd':
+            pass
+        elif data[0] == b'l':
+            data = data[1:] + [b'e'] # padding 'hack' so the length is right
+            r = []
+            start = 0
+            while data[start] != b'e':
+                end_block = Bencode._find_ending_token(data[start:])+start
+                val = Bencode.decode(data[start:end_block+1])
+                r.append(val)
+                start = end_block+1
+            return r
+        else:
+            return data[2]
+
+    def _find_ending_token(data):
+        """ Given a _tokenized data, returns the ending of the current block. """
+        #print("_find_ending_token(): ", data)
+        if not isinstance(data, list):
+            data = Bencode._tokenize(data)
+        if data[0] == b'i':
+            return 2
+        elif data[0] == b'd' or data[0] == b'l':
+            count = 0
+            for index, token in enumerate(data, start=0):
+                if token == b'e':
+                    count -= 1
+                elif token == b'd' or token == b'l':
+                    count += 1
+                if count == 0:
+                    break
+            return index
+        else:
+            return 2
 
     def _tokenize(data):
         """ Returns the bencode data in a tokenized list. """
+
+        if not isinstance(data, bytes):
+            return data
 
         if data is None or data == b'':
             return []
@@ -80,10 +121,6 @@ class Bencode(object):
         data = [bytes([b]) for b in data]
 
         for index, b in enumerate(data, start=0):
-            print(index)
-            print(b)
-            print(b''.join(data[index:]))
-
             if b == b'd':
                 return [b'd'] + Bencode._tokenize(b''.join(data[index+1:]))
 
@@ -114,3 +151,9 @@ class Bencode(object):
 
             else:
                 raise ValueError
+
+if __name__ == "__main__":
+    # print(Bencode._find_ending_token(b"d3:bar4:spam3:fooi42ee"))
+    print(Bencode.decode(b"l4:spam4:eggsi3ee"))
+    print(Bencode.decode(b"le"))
+    print(Bencode.decode(b"llli3eeee"))
