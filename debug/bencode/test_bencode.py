@@ -148,8 +148,8 @@ class TestDecode(unittest.TestCase):
     def test_nested_dicts(self):
         """ Test nested dictionaries are decoded correctly. """
 
-        self.n = bencode.Bencode.decode(b"d0:di42e4:testee")
-        self.assertEqual(self.n, {b"":{42:b"test"}})
+        self.n = bencode.Bencode.decode(b"d0:d4:test:i42eee")
+        self.assertEqual(self.n, {b"":{b"test":42}})
 
     def test_list(self):
         """ Test lists are decoded correctly. """

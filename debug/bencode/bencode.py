@@ -68,13 +68,27 @@ class Bencode(object):
         raise ValueError("Allowed types: int, bytes, list, dict; not %s", type(data))
 
     def decode(data):
-        # print("decode(): ", data)
         if not isinstance(data, list):
             data = Bencode._tokenize(data)
         if data[0] == b'i':
             return int(data[1].decode())
         elif data[0] == b'd':
-            pass
+            # Each dict can be thought of as list [key,val,key,val]. We just have to remove the colon seperators
+            # and call recursively, then do some cleaning to get it in dict format
+            data[0] = b'l'
+            print(data)
+            r = {}
+            dict_end = Bencode._find_ending_token(data)
+            for token in range(len(data[:dict_end])):
+                if data[token] == b':':
+                    if not Bencode._is_integer(data[token-1]):
+                        del data[token]
+                        data.append(b'e')
+            # Zipping so we dont have a lot of clutter working through these. Can be improved for performace later
+            for key,val in zip(Bencode.decode(data)[0::2], Bencode.decode(data)[1::2]):
+                r[key] = val
+            return r
+
         elif data[0] == b'l':
             data = data[1:] + [b'e'] # padding 'hack' so the length is right
             r = []
@@ -89,8 +103,7 @@ class Bencode(object):
             return data[2]
 
     def _find_ending_token(data):
-        """ Given a _tokenized data, returns the ending of the current block. """
-        #print("_find_ending_token(): ", data)
+        """ Given a _tokenized data, returns the index of the ending of the first encoded data. """
         if not isinstance(data, list):
             data = Bencode._tokenize(data)
         if data[0] == b'i':
@@ -107,6 +120,15 @@ class Bencode(object):
             return index
         else:
             return 2
+
+
+    def _is_integer(data):
+        """ Given a bytestring, returns true if it is a positive integer encoded in ascii"""
+        try:
+            int(data.decode())
+            return True
+        except:
+            return False
 
     def _tokenize(data):
         """ Returns the bencode data in a tokenized list. """
@@ -154,6 +176,6 @@ class Bencode(object):
 
 if __name__ == "__main__":
     # print(Bencode._find_ending_token(b"d3:bar4:spam3:fooi42ee"))
-    print(Bencode.decode(b"l4:spam4:eggsi3ee"))
-    print(Bencode.decode(b"le"))
-    print(Bencode.decode(b"llli3eeee"))
+    # print(Bencode.decode(b"l4:spam4:eggsi3ee"))
+    print(Bencode.decode(b"de"))
+    # print(Bencode.decode(b"llli3eeee"))
