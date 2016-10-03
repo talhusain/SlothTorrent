@@ -11,7 +11,7 @@ Zach ([CelloMan012](https://www.github.com/CelloMan012)) <br>
 Juan ([JJ-Gonz](https://www.github.com/JJ-Gonz)) <br>
 Sam ([samliska](https://www.github.com/samliska)) <br>
 Patrick ([Iakavas](https://www.github.com/Iakavas)) <br>
-Tyler ([I can't find Tyler's GitHub.](https://www.youtube.com/watch?v=dQw4w9WgXcQ))
+Tyler (TylerBrooke[](https://github.com/TylerBrooke))
 
 
 Suggested sources for design patterns :sparkles: :eyes:
