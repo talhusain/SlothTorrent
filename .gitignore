@@ -3,4 +3,4 @@
 *results.xml
 *.cache*
 *__pycache__*
-*.conf
+*settings.conf
