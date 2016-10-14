@@ -1,7 +1,27 @@
 """
-This file will contain what we expect the request coming in to be and passes them to the authentication_handler
-to verify permissions before allowing the request to go though.
+This file will load the controllers and pass the flask app so they can setup
+requests that will be expected
 """
 
+from flask import Flask
+
+from db import Database
+
+from index_controller import IndexController, index_page
+from torrent_controller import TorrentController, torrent_page
+
+app = Flask("SlothTorrent")
+app.register_blueprint(index_page)
+app.register_blueprint(torrent_page)
+
+
 class RequestHandler(object):
-    pass
+
+    def __init__(self, db):
+        self.db = db
+        app.run()
+        self.index_controller = IndexController(app, db)
+
+    @app.route('/admin')
+    def admin_page():
+        return "here is where the admin page will go..."
