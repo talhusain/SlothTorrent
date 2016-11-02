@@ -2,3 +2,4 @@ pytest
 Flask
 pg8000
 gitpython
+requests
