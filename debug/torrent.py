@@ -32,8 +32,8 @@ class Torrent(object):
 
         # Populate required fields
         self.name = self.created_by = self._torrent_dict[b'info'][b'name'].decode('utf-8')
-        self.piece_length = self.created_by = self._torrent_dict[b'info'][b'piece length']
-        self.pieces = self.created_by = self._torrent_dict[b'info'][b'pieces']
+        self.piece_length = self._torrent_dict[b'info'][b'piece length']
+        self.pieces = self._torrent_dict[b'info'][b'pieces']
         self.info_hash = sha1(encode(self._torrent_dict[b'info'])).digest()
         
         # Add single file(s)
