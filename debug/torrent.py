@@ -2,7 +2,6 @@
 FILE: torrent.py
 CLASS PROVIDED: Torrent
 """
-
 from bencoding.bencode import encode, decode
 from datetime import datetime
 from hashlib import sha1
