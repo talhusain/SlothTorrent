@@ -4,7 +4,25 @@ and pass the connection to objects that use it.
 """
 
 import configparser
-import pg8000
+import psycopg2
+
+DEBUG=True
+import datetime
+'''
+conn = psycopg2.connect(database="test", user="postgres", password="secret")
+
+The two call styles are mutually exclusive: you cannot specify connection parameters as keyword arguments together with a connection string; only the parameters not needed for the database connection (i.e. connection_factory, cursor_factory, and async) are supported together with the dsn argument.
+
+The basic connection parameters are:
+
+    dbname – the database name (only in the dsn string)
+    database – the database name (only as keyword argument)
+    user – user name used to authenticate
+    password – password used to authenticate
+    host – database host address (defaults to UNIX socket if not provided)
+    port – connection port number (defaults to 5432 if not provided)
+
+'''
 
 class Database(object):
     '''
@@ -24,12 +42,13 @@ class Database(object):
         db_name = config['DATABASE']['db']
 
         # Establish connection object initialize tables
-        self._connection = pg8000.connect(user=username, 
-                                          password=password,
-                                          host=ip,
-                                          port=int(port),
-                                          database=db_name)
+        self._connection = psycopg2.connect(user=username, 
+                                            password=password,
+                                            host=ip,
+                                            port=int(port),
+                                            database=db_name)
         self._initialize_tables()
+        self._addFakeTorrents()
 
     def _initialize_tables(self):
         cursor = self._connection.cursor()
@@ -37,6 +56,16 @@ class Database(object):
         cursor.execute("CREATE TABLE IF NOT EXISTS torrents (info_hash BYTEA PRIMARY KEY, name TEXT, comment TEXT, created_by TEXT, creation_time TIMESTAMP, piece_length INT, pieces BYTEA)")
         cursor.execute("CREATE TABLE IF NOT EXISTS announcers (url TEXT, info_hash BYTEA REFERENCES torrents (info_hash), PRIMARY KEY (url, info_hash))")
         cursor.execute("CREATE TABLE IF NOT EXISTS torrent_files (file_path TEXT, length INT, info_hash BYTEA REFERENCES torrents (info_hash), PRIMARY KEY (file_path, length, info_hash))")
+        self._connection.commit()
+
+    def _addFakeTorrents(self):
+        cursor = self._connection.cursor()
+        dt = datetime.datetime.now()
+        cursor.execute("INSERT INTO torrents VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (info_hash) DO NOTHING", (b'0000', 'sample0', 'sample comment', 'sample creator', dt, 0, b'0000'))
+        cursor.execute("INSERT INTO torrents VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (info_hash) DO NOTHING", (b'0001', 'sample1', 'sample comment', 'sample creator', dt, 0, b'0000'))
+        cursor.execute("INSERT INTO torrents VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (info_hash) DO NOTHING", (b'0002', 'sample2', 'sample comment', 'sample creator', dt, 0, b'0000'))
+        cursor.execute("INSERT INTO torrents VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (info_hash) DO NOTHING", (b'0003', 'sample3', 'sample comment', 'sample creator', dt, 0, b'0000'))
+        cursor.execute("INSERT INTO torrents VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (info_hash) DO NOTHING", (b'0004', 'sample4', 'sample comment', 'sample creator', dt, 0, b'0000'))
         self._connection.commit()
 
     def execute(self, statement):
