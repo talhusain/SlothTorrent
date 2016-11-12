@@ -19,6 +19,7 @@ class Torrent(object):
         self.files = []
         self.trackers = []
         self._torrent_dict = torrent_dict
+        # print(self._torrent_dict)
         # Populate Optional Fields
         if b'comment' in self._torrent_dict:
             self.comment = self._torrent_dict[b'comment'].decode('utf-8')
@@ -27,12 +28,12 @@ class Torrent(object):
         if b'creation date' in self._torrent_dict:
             self.creation_date = datetime.fromtimestamp(self._torrent_dict[b'creation date'])
         if b'encoding' in self._torrent_dict:
-            self.created_by = self._torrent_dict[b'encoding'].decode('utf-8')
+            self.encoding = self._torrent_dict[b'encoding'].decode('utf-8')
 
         # Populate required fields
-        self.name = self.created_by = self._torrent_dict[b'info'][b'name'].decode('utf-8')
-        self.piece_length = self.created_by = self._torrent_dict[b'info'][b'piece length']
-        self.pieces = self.created_by = self._torrent_dict[b'info'][b'pieces']
+        self.name = self._torrent_dict[b'info'][b'name'].decode('utf-8')
+        self.piece_length  = self._torrent_dict[b'info'][b'piece length']
+        self.pieces = self._torrent_dict[b'info'][b'pieces']
         self.info_hash = sha1(encode(self._torrent_dict[b'info'])).digest()
         
         # Add single file(s)
@@ -53,6 +54,9 @@ class Torrent(object):
                 for tracker in trackers:
                     self.trackers.append(tracker.decode('utf-8'))
 
+    def get_comment(self):
+        return self.comment
+
     def __str__(self):
         return self.name
 
@@ -68,4 +72,5 @@ if __name__ == '__main__':
             torrent_dict = decode(f.read())
             torrent = Torrent(torrent_dict)
             print(torrent)
+            print(dir(torrent))
     data = None
