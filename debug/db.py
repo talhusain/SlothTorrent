@@ -5,6 +5,9 @@ and pass the connection to objects that use it.
 
 import configparser
 import psycopg2
+import os
+from bencoding.bencode import decode
+from torrent import Torrent
 import datetime
 
 DEBUG = True
@@ -37,11 +40,12 @@ class Database(object):
                                             database=db_name)
         self._initialize_tables()
         self._add_fake_torrents()
+        self._add_sample_torrents()
 
     def _initialize_tables(self):
         cursor = self._connection.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS"
-                       "plugins (url TEXT, last_run TIMESTAMP)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS plugins"
+                       "(url TEXT, last_run TIMESTAMP)")
         cursor.execute("CREATE TABLE IF NOT EXISTS torrents "
                        "(info_hash BYTEA PRIMARY KEY,"
                        "name TEXT,"
@@ -58,7 +62,7 @@ class Database(object):
                        "(file_path TEXT,"
                        "length INT,"
                        "info_hash BYTEA REFERENCES torrents (info_hash),"
-                       "PRIMARY KEY (file_path, length, info_hash))")
+                       "PRIMARY KEY (file_path, info_hash))")
         self._connection.commit()
 
     def _add_fake_torrents(self):
@@ -116,6 +120,13 @@ class Database(object):
                         b'0000'))
         self._connection.commit()
 
+    def _add_sample_torrents(self):
+        for file in os.listdir('sample_torrents'):
+            with open('sample_torrents/' + file, 'rb') as f:
+                torrent_dict = decode(f.read())
+                torrent = Torrent(torrent_dict)
+                self.import_torrent(torrent)
+
     def execute(self, statement):
         return self._connection.execute(statement)
 
@@ -168,7 +179,36 @@ class Database(object):
         Returns:
             BOOL: success or failure
         """
-        pass
+        cursor = self._connection.cursor()
+        try:
+            cursor.execute(("INSERT INTO torrents VALUES "
+                            "(%s, %s, %s, %s, %s, %s, %s) "
+                            "ON CONFLICT (info_hash) DO NOTHING"),
+                           (torrent.info_hash,
+                            torrent.name,
+                            torrent.comment,
+                            torrent.created_by,
+                            torrent.creation_date,
+                            torrent.piece_length,
+                            torrent.pieces))
+            for tracker in torrent.trackers:
+                cursor.execute(("INSERT INTO announcers VALUES (%s, %s) "
+                                "ON CONFLICT (url, info_hash) DO NOTHING"),
+                               (tracker, torrent.info_hash))
+            for file in torrent.files:
+                print(file)
+                cursor.execute(("INSERT INTO torrent_files VALUES "
+                                "(%s, %s, %s) "
+                                "ON CONFLICT (file_path, info_hash) "
+                                "DO NOTHING"),
+                               (file['path'],
+                                str(file['length']),
+                                torrent.info_hash))
+        except psycopg2.ProgrammingError as e:
+            print(e)
+            return False
+        self._connection.commit()
+        return True
 
     def get_torrent(self, info_hash):
         """Returns a torrent from the database given an info_hash

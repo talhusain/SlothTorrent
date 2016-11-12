@@ -32,7 +32,7 @@ class Torrent(object):
             creation_date_timestamp = self._torrent_dict[b'creation date']
             self.creation_date = fromtimestamp(creation_date_timestamp)
         if b'encoding' in self._torrent_dict:
-            self.created_by = self._torrent_dict[b'encoding'].decode('utf-8')
+            self.encoding = self._torrent_dict[b'encoding'].decode('utf-8')
 
         # Populate required fields
         self.name = self._torrent_dict[b'info'][b'name'].decode('utf-8')
@@ -59,6 +59,9 @@ class Torrent(object):
                 for tracker in trackers:
                     self.trackers.append(tracker.decode('utf-8'))
 
+    def get_comment(self):
+        return self.comment
+
     def __str__(self):
         return self.name
 
@@ -75,4 +78,3 @@ if __name__ == '__main__':
             torrent_dict = decode(f.read())
             torrent = Torrent(torrent_dict)
             print(torrent)
-    data = None
