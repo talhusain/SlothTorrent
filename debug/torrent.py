@@ -3,7 +3,7 @@ FILE: torrent.py
 CLASS PROVIDED: Torrent
 """
 from bencoding.bencode import encode, decode
-from datetime.datetime import fromtimestamp
+from datetime import datetime as dt
 from hashlib import sha1
 import os
 
@@ -30,7 +30,7 @@ class Torrent(object):
             self.created_by = self._torrent_dict[b'created by'].decode('utf-8')
         if b'creation date' in self._torrent_dict:
             creation_date_timestamp = self._torrent_dict[b'creation date']
-            self.creation_date = fromtimestamp(creation_date_timestamp)
+            self.creation_date = dt.fromtimestamp(creation_date_timestamp)
         if b'encoding' in self._torrent_dict:
             self.encoding = self._torrent_dict[b'encoding'].decode('utf-8')
 
