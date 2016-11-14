@@ -243,3 +243,11 @@ class Database(object):
             BOOL: success or failure
         """
         pass
+
+    def get_all_plugin(self):
+        """Returns a list of tuples of all plugins in the database
+
+        Returns:
+            list: List of tuples in the format (URL, LAST_RUN_DATE)
+        """
+        pass
