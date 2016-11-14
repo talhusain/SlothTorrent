@@ -32,7 +32,7 @@ class Loader(object):
     def clone_plugin(self, url):
         path = urlparse(url).path
         path = os.path.join(self.plugin_dir, path[1:])
-        if os.path.isdir(path):
+        if not os.path.exists(path):
             Repo.clone_from(url, path)
         return path
 
