@@ -53,7 +53,8 @@ class Database(object):
                        "created_by TEXT,"
                        "creation_time TIMESTAMP,"
                        "piece_length INT,"
-                       "pieces BYTEA)")
+                       "pieces BYTEA)"
+                       "provider TEXT REFERENCES plugins (url)")
         cursor.execute("CREATE TABLE IF NOT EXISTS announcers "
                        "(url TEXT,"
                        "info_hash BYTEA REFERENCES torrents (info_hash),"
