@@ -17,7 +17,6 @@ class Loader(object):
         self.settings_file = settings_file
         self._parse_config()
         self._load_plugins()
-        
 
     def _load_plugins(self):
         pass
@@ -29,12 +28,13 @@ class Loader(object):
 
     def clone_plugin(self, url):
         path = urlparse(url).path
-        print(path)
-        print(os.path.join('plugins/', path[1:]))
-        Repo.clone_from(url, os.path.join(self.plugin_dir, path[1:]))
+        path = os.path.join(self.plugin_dir, path[1:])
+        if not os.path.exists(path):
+            Repo.clone_from(url, path)
+        return path
+
 
 if __name__ == '__main__':
     print('running')
     loader = Loader(None, 'settings.conf')
-    
-loader.clone_plugin('https://github.com/BadStreff/SlothTorrent-yts')
+    loader.clone_plugin('https://github.com/BadStreff/SlothTorrent-yts')
