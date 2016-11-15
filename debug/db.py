@@ -264,16 +264,15 @@ class Database(object):
         """
         pass
 
-    def get_all_plugin(self):
+    def get_all_plugins(self):
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
         	cursor.execute("SELECT * FROM plugins")
-        	for record in cursor:
-        		print(record)
+        	cursor.fetchall()
         except psycopg2.ProgrammingError as e:
         	print(e)
-
+        connection.close()
     def get_connection(self):
         return psycopg2.connect(user=self.username,
                                 password=self.password,
