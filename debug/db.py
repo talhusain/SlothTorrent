@@ -45,7 +45,7 @@ class Database(object):
     def _initialize_tables(self):
         cursor = self._connection.cursor()
         cursor.execute("CREATE TABLE IF NOT EXISTS plugins"
-                       "(url TEXT, last_run TIMESTAMP)")
+                       "(url TEXT PRIMARY KEY, last_run TIMESTAMP)")
         cursor.execute("CREATE TABLE IF NOT EXISTS torrents "
                        "(info_hash BYTEA PRIMARY KEY,"
                        "name TEXT,"
@@ -53,8 +53,8 @@ class Database(object):
                        "created_by TEXT,"
                        "creation_time TIMESTAMP,"
                        "piece_length INT,"
-                       "pieces BYTEA)"
-                       "provider TEXT REFERENCES plugins (url)")
+                       "pieces BYTEA,"
+                       "provider TEXT REFERENCES plugins (url))")
         cursor.execute("CREATE TABLE IF NOT EXISTS announcers "
                        "(url TEXT,"
                        "info_hash BYTEA REFERENCES torrents (info_hash),"
@@ -69,8 +69,12 @@ class Database(object):
     def _add_fake_torrents(self):
         cursor = self._connection.cursor()
         dt = datetime.datetime.now()
+        cursor.execute(("INSERT INTO plugins VALUES "
+                        "(%s, %s) "
+                        "ON CONFLICT (url) DO NOTHING"),
+                       ('None', dt))
         cursor.execute(("INSERT INTO torrents VALUES "
-                        "(%s, %s, %s, %s, %s, %s, %s) "
+                        "(%s, %s, %s, %s, %s, %s, %s, %s) "
                         "ON CONFLICT (info_hash) DO NOTHING"),
                        (b'0000',
                         'sample0',
@@ -78,9 +82,10 @@ class Database(object):
                         'sample creator',
                         dt,
                         0,
-                        b'0000'))
+                        b'0000',
+                        'None'))
         cursor.execute(("INSERT INTO torrents VALUES "
-                        "(%s, %s, %s, %s, %s, %s, %s) "
+                        "(%s, %s, %s, %s, %s, %s, %s, %s) "
                         "ON CONFLICT (info_hash) DO NOTHING"),
                        (b'0001',
                         'sample1',
@@ -88,9 +93,10 @@ class Database(object):
                         'sample creator',
                         dt,
                         0,
-                        b'0000'))
+                        b'0000',
+                        'None'))
         cursor.execute(("INSERT INTO torrents VALUES "
-                        "(%s, %s, %s, %s, %s, %s, %s) "
+                        "(%s, %s, %s, %s, %s, %s, %s, %s) "
                         "ON CONFLICT (info_hash) DO NOTHING"),
                        (b'0002',
                         'sample2',
@@ -98,9 +104,10 @@ class Database(object):
                         'sample creator',
                         dt,
                         0,
-                        b'0000'))
+                        b'0000',
+                        'None'))
         cursor.execute(("INSERT INTO torrents VALUES "
-                        "(%s, %s, %s, %s, %s, %s, %s) "
+                        "(%s, %s, %s, %s, %s, %s, %s, %s) "
                         "ON CONFLICT (info_hash) DO NOTHING"),
                        (b'0003',
                         'sample4',
@@ -108,9 +115,10 @@ class Database(object):
                         'sample creator',
                         dt,
                         0,
-                        b'0000'))
+                        b'0000',
+                        'None'))
         cursor.execute(("INSERT INTO torrents VALUES "
-                        "(%s, %s, %s, %s, %s, %s, %s) "
+                        "(%s, %s, %s, %s, %s, %s, %s, %s) "
                         "ON CONFLICT (info_hash) DO NOTHING"),
                        (b'0005',
                         'sample5',
@@ -118,15 +126,17 @@ class Database(object):
                         'sample creator',
                         dt,
                         0,
-                        b'0000'))
+                        b'0000',
+                        'None'))
         self._connection.commit()
 
     def _add_sample_torrents(self):
+        print('importing sample torrents...')
         for file in os.listdir('sample_torrents'):
             with open('sample_torrents/' + file, 'rb') as f:
                 torrent_dict = decode(f.read())
                 torrent = Torrent(torrent_dict)
-                self.import_torrent(torrent)
+                self.import_torrent(torrent, 'None')
 
     def execute(self, statement):
         return self._connection.execute(statement)
@@ -200,7 +210,7 @@ class Database(object):
                                 "ON CONFLICT (url, info_hash) DO NOTHING"),
                                (tracker, torrent.info_hash))
             for file in torrent.files:
-                print(file)
+                # print(file)
                 cursor.execute(("INSERT INTO torrent_files VALUES "
                                 "(%s, %s, %s) "
                                 "ON CONFLICT (file_path, info_hash) "
@@ -245,5 +255,13 @@ class Database(object):
 
         Returns:
             BOOL: success or failure
+        """
+        pass
+
+    def get_all_plugin(self):
+        """Returns a list of tuples of all plugins in the database
+
+        Returns:
+            list: List of tuples in the format (URL, LAST_RUN_DATE)
         """
         pass
