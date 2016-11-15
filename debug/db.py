@@ -26,23 +26,20 @@ class Database(object):
         # Parse config file to read in settings
         config = configparser.ConfigParser()
         config.read(settings_file)
-        username = config['DATABASE']['username']
-        password = config['DATABASE']['password']
-        ip = config['DATABASE']['ip']
-        port = config['DATABASE']['port']
-        db_name = config['DATABASE']['db']
+        self.username = config['DATABASE']['username']
+        self.password = config['DATABASE']['password']
+        self.ip = config['DATABASE']['ip']
+        self.port = config['DATABASE']['port']
+        self.db_name = config['DATABASE']['db']
 
         # Establish connection object initialize tables
-        self._connection = psycopg2.connect(user=username,
-                                            password=password,
-                                            host=ip,
-                                            port=int(port),
-                                            database=db_name)
         self._initialize_tables()
-        self._add_fake_torrents()
-        self._add_sample_torrents()
+        # self._add_fake_torrents()
+        # self._add_sample_torrents()
+        self._connection.close()
 
     def _initialize_tables(self):
+        self._connection = self.get_connection()
         cursor = self._connection.cursor()
         cursor.execute("CREATE TABLE IF NOT EXISTS plugins"
                        "(url TEXT PRIMARY KEY, last_run TIMESTAMP)")
@@ -61,18 +58,24 @@ class Database(object):
                        "PRIMARY KEY (url, info_hash))")
         cursor.execute("CREATE TABLE IF NOT EXISTS torrent_files "
                        "(file_path TEXT,"
-                       "length INT,"
+                       "length TEXT,"
                        "info_hash BYTEA REFERENCES torrents (info_hash),"
                        "PRIMARY KEY (file_path, info_hash))")
         self._connection.commit()
+        self._connection.close()
 
     def _add_fake_torrents(self):
+        self._connection = self.get_connection()
         cursor = self._connection.cursor()
         dt = datetime.datetime.now()
         cursor.execute(("INSERT INTO plugins VALUES "
                         "(%s, %s) "
                         "ON CONFLICT (url) DO NOTHING"),
                        ('None', dt))
+        cursor.execute(("INSERT INTO plugins VALUES "
+                        "(%s, %s) "
+                        "ON CONFLICT (url) DO NOTHING"),
+                       ('https://github.com/BadStreff/slothtorrent_yts', dt))
         cursor.execute(("INSERT INTO torrents VALUES "
                         "(%s, %s, %s, %s, %s, %s, %s, %s) "
                         "ON CONFLICT (info_hash) DO NOTHING"),
@@ -129,6 +132,7 @@ class Database(object):
                         b'0000',
                         'None'))
         self._connection.commit()
+        self._connection.close()
 
     def _add_sample_torrents(self):
         print('importing sample torrents...')
@@ -137,9 +141,6 @@ class Database(object):
                 torrent_dict = decode(f.read())
                 torrent = Torrent(torrent_dict)
                 self.import_torrent(torrent, 'None')
-
-    def execute(self, statement):
-        return self._connection.execute(statement)
 
     def get_recent_torrents(self, number):
         """Returns a list of the most recently added torrents. If the
@@ -192,7 +193,9 @@ class Database(object):
         Returns:
             BOOL: success or failure
         """
-        cursor = self._connection.cursor()
+        print(torrent)
+        connection = self.get_connection()
+        cursor = connection.cursor()
         try:
             cursor.execute(("INSERT INTO torrents VALUES "
                             "(%s, %s, %s, %s, %s, %s, %s, %s) "
@@ -210,7 +213,6 @@ class Database(object):
                                 "ON CONFLICT (url, info_hash) DO NOTHING"),
                                (tracker, torrent.info_hash))
             for file in torrent.files:
-                # print(file)
                 cursor.execute(("INSERT INTO torrent_files VALUES "
                                 "(%s, %s, %s) "
                                 "ON CONFLICT (file_path, info_hash) "
@@ -218,11 +220,15 @@ class Database(object):
                                (file['path'],
                                 str(file['length']),
                                 torrent.info_hash))
+            ret = True
         except psycopg2.ProgrammingError as e:
             print(e)
-            return False
-        self._connection.commit()
-        return True
+            connection.rollback()
+            ret = False
+        cursor.close()
+        connection.commit()
+        connection.close()
+        return ret
 
     def get_torrent(self, info_hash):
         """Returns a torrent from the database given an info_hash
@@ -265,3 +271,10 @@ class Database(object):
             list: List of tuples in the format (URL, LAST_RUN_DATE)
         """
         pass
+
+    def get_connection(self):
+        return psycopg2.connect(user=self.username,
+                                password=self.password,
+                                host=self.ip,
+                                port=int(self.port),
+                                database=self.db_name)
