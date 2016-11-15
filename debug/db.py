@@ -169,13 +169,15 @@ class Database(object):
         """
         pass
 
-    def import_torrent(self, torrent):
+    def import_torrent(self, torrent, provider):
         """Imports a torrent object into the database. This function
         should only be called by the plugin module once in production
 
         Args:
-            torrent (Torrent): torrent object see torrent.py for more
+            torrent (Torrent): Torrent object see torrent.py for more
             information
+            provider (string): The url of the plugin that created the
+            torrent
 
         Returns:
             BOOL: success or failure
@@ -183,7 +185,7 @@ class Database(object):
         cursor = self._connection.cursor()
         try:
             cursor.execute(("INSERT INTO torrents VALUES "
-                            "(%s, %s, %s, %s, %s, %s, %s) "
+                            "(%s, %s, %s, %s, %s, %s, %s, %s) "
                             "ON CONFLICT (info_hash) DO NOTHING"),
                            (torrent.info_hash,
                             torrent.name,
@@ -191,7 +193,8 @@ class Database(object):
                             torrent.created_by,
                             torrent.creation_date,
                             torrent.piece_length,
-                            torrent.pieces))
+                            torrent.pieces,
+                            provider))
             for tracker in torrent.trackers:
                 cursor.execute(("INSERT INTO announcers VALUES (%s, %s) "
                                 "ON CONFLICT (url, info_hash) DO NOTHING"),
