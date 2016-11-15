@@ -6,9 +6,14 @@ depending on how complex it gets.
 
 import configparser
 import os
+import _thread
+import threading
 import queue
 from git import Repo
 from urllib.parse import urlparse
+import requests
+from torrent import Torrent
+from bencoding.bencode import decode
 # from db import Database
 from pluginbase import PluginBase
 
@@ -46,4 +51,10 @@ if __name__ == '__main__':
     with plugin_source:
         src = plugin_source.load_plugin('main')
     q = queue.Queue()
-    src.init(q)
+    _thread.start_new_thread(src.init, (q,))
+    while True:
+        if not q.empty():
+            url = q.get()
+            print('got url %s' % url)
+            r = requests.get(url)
+            print(Torrent(decode(r.content)))
