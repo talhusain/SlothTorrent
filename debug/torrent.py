@@ -36,7 +36,7 @@ class Torrent(object):
             creation_date_timestamp = self._torrent_dict[b'creation date']
             self.creation_date = dt.fromtimestamp(creation_date_timestamp)
         else:
-            self.creation_date = dt.fromtimestamp(0000000001)
+            self.creation_date = dt.fromtimestamp(0)
         if b'encoding' in self._torrent_dict:
             self.encoding = self._torrent_dict[b'encoding'].decode('utf-8')
         else:
