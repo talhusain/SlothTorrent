@@ -269,7 +269,7 @@ class Database(object):
         cursor = connection.cursor()
         try:
         	cursor.execute("SELECT * FROM plugins")
-        	cursor.fetchall()
+        	return cursor.fetchall()
         except psycopg2.ProgrammingError as e:
         	print(e)
         connection.close()
