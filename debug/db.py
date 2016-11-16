@@ -264,14 +264,15 @@ class Database(object):
         """
         pass
 
-    def get_all_plugin(self):
-        """Returns a list of tuples of all plugins in the database
-
-        Returns:
-            list: List of tuples in the format (URL, LAST_RUN_DATE)
-        """
-        pass
-
+    def get_all_plugins(self):
+        connection = self.get_connection()
+        cursor = connection.cursor()
+        try:
+        	cursor.execute("SELECT * FROM plugins")
+        	return cursor.fetchall()
+        except psycopg2.ProgrammingError as e:
+        	print(e)
+        connection.close()
     def get_connection(self):
         return psycopg2.connect(user=self.username,
                                 password=self.password,
