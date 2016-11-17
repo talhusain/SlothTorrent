@@ -15,12 +15,19 @@ class IndexController(object):
 
 @index_page.route('/')
 def index():
-    return "You are looking at the index page</br>This is where the search  field will be displayed"
+    return render_template('index.html')
 
 @index_page.route('/hello/')
 @index_page.route('/hello/<name>')
 def hello(name=None):
     return render_template('index.html', name=name)
+
+
+
+
+
+
+
 
 @index_page.route('/login', methods=['GET', 'POST'])
 def login():
