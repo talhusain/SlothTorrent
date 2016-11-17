@@ -142,18 +142,30 @@ class Database(object):
                 torrent = Torrent(torrent_dict)
                 self.import_torrent(torrent, 'None')
 
-    def get_recent_torrents(self, number):
+    def get_recent_torrents(self, number=10):
         """Returns a list of the most recently added torrents. If the
         number exceeds the total number of torrents in the database all
         torrents will be returned.
-
+        ex SELECT * FROM News ORDER BY date DESC
         Args:
             number (int): The maximum number of torrents to return
 
         Returns:
             list: A list of Torrent objects
         """
-        pass
+        crit = 'info_hash,name,comment,created_by,creation_time,provider'
+        connection = self.get_connection()
+        cursor = connection.cursor()
+        try:
+            cursor.execute(("SELECT %s FROM torrents ORDER BY "
+                            "creation_time DESC limit %s"),
+                           (crit, str(number)))
+            ret = cursor.fetchall()
+        except psycopg2.ProgrammingError as e:
+            print(e)
+            connection.rollback()
+            ret = []
+        return ret
 
     def get_popular_torrents(self, number):
         """Returns torrents with the most seeders. If the number exceeds

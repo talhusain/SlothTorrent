@@ -23,8 +23,8 @@ class RequestHandler(object):
 
     def __init__(self, db):
         self.db = db
-        app.run()
         self.index_controller = IndexController(db)
+        app.run()
 
     @app.route('/admin')
     def admin_page():
