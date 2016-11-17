@@ -24,7 +24,6 @@ class IndexController(object):
 @index_page.route('/')
 def index():
     torrents = db.get_recent_torrents()
-    print(torrents)
     return render_template('index.html', torrents=torrents)
 
 
