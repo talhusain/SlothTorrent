@@ -146,15 +146,16 @@ class Database(object):
         """Returns a list of the most recently added torrents. If the
         number exceeds the total number of torrents in the database all
         torrents will be returned.
-
+        ex SELECT * FROM News ORDER BY date DESC
         Args:
-            number (int): The maximum number of torrents to return
+            number (int): The maximum number of torrents to return 10 
 
         Returns:
             list: A list of Torrent objects
         """
-        pass
-
+        
+        rec=cursor.execute("SELECT name FROM torrents ORDER BY creation_time DESC limit %s" % number)
+        return rec
     def get_popular_torrents(self, number):
         """Returns torrents with the most seeders. If the number exceeds
         the total number of torrents in the database all torrents will
