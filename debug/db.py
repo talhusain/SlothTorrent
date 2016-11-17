@@ -253,16 +253,18 @@ class Database(object):
         pass
 
     def remove_plugin(self, url):
-        """Remove a plugin from the database
-
-        Args:
-            url (string): Removes the specified plugin url from the
-            database
-
-        Returns:
-            BOOL: success or failure
-        """
-        pass
+        connection = self.get_connection()
+        cursor = connection.cursor()
+        try:
+        	cursor.execute(("DELETE FROM plugins WHERE url = %s"),(url))
+			cursor.execute(("DELETE * FROM torrents WHERE provider = %s"),(url))
+            cursor.execute(("DELETE * FROM announcers WHERE url = %s"),(url))
+		except psycopg2.ProgrammingError as e:
+        	print(e)
+        	return False
+        connection.close()
+        return True
+    
 
     def get_all_plugins(self):
         connection = self.get_connection()
