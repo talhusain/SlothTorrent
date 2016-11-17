@@ -21,10 +21,13 @@ class IndexController(object):
         db = database
 
 
-@index_page.route('/')
+@index_page.route('/', methods=['GET', 'POST'])
 def index():
-    torrents = db.get_recent_torrents()
-    return render_template('index.html', torrents=torrents)
+    if request.method == 'POST':
+        return render_template('index.html')
+    else:
+        torrents = db.get_recent_torrents(25)
+        return render_template('index.html', torrents=torrents)
 
 
 @index_page.route('/hello/')
