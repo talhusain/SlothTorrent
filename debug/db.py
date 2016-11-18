@@ -303,10 +303,11 @@ class Database(object):
         cursor = connection.cursor()
         try:
             cursor.execute("SELECT * FROM plugins")
-            print(cursor.fetchall())
+            return cursor.fetchall()
         except psycopg2.ProgrammingError as e:
             print(e)
         connection.close()
+        return []
 
     def get_connection(self):
         return psycopg2.connect(user=self.username,
