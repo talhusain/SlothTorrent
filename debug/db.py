@@ -32,8 +32,13 @@ class Database(object):
         self.port = config['DATABASE']['port']
         self.db_name = config['DATABASE']['db']
 
+
+       
         # Establish connection object initialize tables
+        #self._drop_all_tables()
         self._initialize_tables()
+        #self.add_fake_plugin()
+        #self.remove_plugin("https://github.com/BadStreff/slothtorrent_yts")
         # self._add_fake_torrents()
         # self._add_sample_torrents()
         self._connection.close()
@@ -42,8 +47,8 @@ class Database(object):
         self._connection = self.get_connection()
         cursor = self._connection.cursor()
         cursor.execute("DROP TABLE IF EXISTS torrents, plugins, announcers, torrent_files")
-        connection.commit()
-        connection.close()
+        self._connection.commit()
+        self._connection.close()
 
 
 
@@ -52,8 +57,7 @@ class Database(object):
         self._connection = self.get_connection()
         cursor = self._connection.cursor()
         cursor.execute("CREATE TABLE IF NOT EXISTS plugins"
-                       "(url TEXT PRIMARY KEY, last_run TIMESTAMP)"
-                       "ON DELETE CASCADE")
+                       "(url TEXT PRIMARY KEY, last_run TIMESTAMP)")
         cursor.execute("CREATE TABLE IF NOT EXISTS torrents "
                        "(info_hash BYTEA PRIMARY KEY,"
                        "name TEXT,"
@@ -62,19 +66,33 @@ class Database(object):
                        "creation_time TIMESTAMP,"
                        "piece_length INT,"
                        "pieces BYTEA,"
-                       "provider TEXT REFERENCES plugins (url))"
-                       "ON DELETE CASCADE")
+                       "provider TEXT REFERENCES plugins (url) ON UPDATE CASCADE ON DELETE CASCADE)")
         cursor.execute("CREATE TABLE IF NOT EXISTS announcers "
                        "(url TEXT,"
-                       "info_hash BYTEA REFERENCES torrents (info_hash),"
-                       "PRIMARY KEY (url, info_hash))"
-                       "ON DELETE CASCADE")
+                       "info_hash BYTEA REFERENCES torrents (info_hash) ON UPDATE CASCADE ON DELETE CASCADE,"
+                       "PRIMARY KEY (url, info_hash))")
         cursor.execute("CREATE TABLE IF NOT EXISTS torrent_files "
                        "(file_path TEXT,"
                        "length TEXT,"
-                       "info_hash BYTEA REFERENCES torrents (info_hash),"
-                       "PRIMARY KEY (file_path, info_hash))"
-                       "ON DELETE CASCADE")
+                       "info_hash BYTEA REFERENCES torrents (info_hash) ON UPDATE CASCADE ON DELETE CASCADE,"
+                       "PRIMARY KEY (file_path, info_hash))")
+        self._connection.commit()
+        self._connection.close()
+
+    
+
+    def add_fake_plugin(self):
+        self._connection = self.get_connection()
+        cursor = self._connection.cursor()
+        dt = datetime.datetime.now()
+        cursor.execute(("INSERT INTO plugins VALUES "
+                        "(%s, %s) "
+                        "ON CONFLICT (url) DO NOTHING"),
+                       ('None', dt))
+        cursor.execute(("INSERT INTO plugins VALUES "
+                        "(%s, %s) "
+                        "ON CONFLICT (url) DO NOTHING"),
+                       ('https://github.com/BadStreff/slothtorrent_yts', dt))
         self._connection.commit()
         self._connection.close()
 
@@ -270,10 +288,12 @@ class Database(object):
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
-            cursor.execute(("DELETE FROM plugins WHERE url = %s"),(url))
+            cursor.execute("DELETE FROM plugins WHERE url = %s", (url,))
+            
         except psycopg2.ProgrammingError as e:
             print(e)
             return False
+        connection.commit()
         connection.close()
         return True
     
@@ -283,7 +303,7 @@ class Database(object):
         cursor = connection.cursor()
         try:
             cursor.execute("SELECT * FROM plugins")
-            return cursor.fetchall()
+            print(cursor.fetchall())
         except psycopg2.ProgrammingError as e:
             print(e)
         connection.close()
