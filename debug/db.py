@@ -37,12 +37,23 @@ class Database(object):
         # self._add_fake_torrents()
         # self._add_sample_torrents()
         self._connection.close()
+    
+    def _drop_all_tables(self):
+        self._connection = self.get_connection()
+        cursor = self._connection.cursor()
+        cursor.execute("DROP TABLE IF EXISTS torrents, plugins, announcers, torrent_files")
+        connection.commit()
+        connection.close()
+
+
+
 
     def _initialize_tables(self):
         self._connection = self.get_connection()
         cursor = self._connection.cursor()
         cursor.execute("CREATE TABLE IF NOT EXISTS plugins"
-                       "(url TEXT PRIMARY KEY, last_run TIMESTAMP)")
+                       "(url TEXT PRIMARY KEY, last_run TIMESTAMP)"
+                       "ON DELETE CASCADE")
         cursor.execute("CREATE TABLE IF NOT EXISTS torrents "
                        "(info_hash BYTEA PRIMARY KEY,"
                        "name TEXT,"
@@ -51,16 +62,19 @@ class Database(object):
                        "creation_time TIMESTAMP,"
                        "piece_length INT,"
                        "pieces BYTEA,"
-                       "provider TEXT REFERENCES plugins (url))")
+                       "provider TEXT REFERENCES plugins (url))"
+                       "ON DELETE CASCADE")
         cursor.execute("CREATE TABLE IF NOT EXISTS announcers "
                        "(url TEXT,"
                        "info_hash BYTEA REFERENCES torrents (info_hash),"
-                       "PRIMARY KEY (url, info_hash))")
+                       "PRIMARY KEY (url, info_hash))"
+                       "ON DELETE CASCADE")
         cursor.execute("CREATE TABLE IF NOT EXISTS torrent_files "
                        "(file_path TEXT,"
                        "length TEXT,"
                        "info_hash BYTEA REFERENCES torrents (info_hash),"
-                       "PRIMARY KEY (file_path, info_hash))")
+                       "PRIMARY KEY (file_path, info_hash))"
+                       "ON DELETE CASCADE")
         self._connection.commit()
         self._connection.close()
 
@@ -257,8 +271,6 @@ class Database(object):
         cursor = connection.cursor()
         try:
             cursor.execute(("DELETE FROM plugins WHERE url = %s"),(url))
-            cursor.execute(("DELETE * FROM torrents WHERE provider = %s"),(url))
-            cursor.execute(("DELETE * FROM announcers WHERE url = %s"),(url))
         except psycopg2.ProgrammingError as e:
             print(e)
             return False
