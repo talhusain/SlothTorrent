@@ -28,14 +28,31 @@ class Loader(object):
         threading.Thread(target=self._load_plugins).start()
 
     def _load_plugins(self):
-        path = self.clone_plugin(self.sample_plugin)
-        plugin_base = PluginBase(package='test')
-        plugin_source = plugin_base.make_plugin_source(searchpath=[path])
-        with plugin_source:
-            src = plugin_source.load_plugin('main')
-        t = threading.Thread(target=src.init, args=(self._queue,))
-        t.start()
-        t.join()
+        # clone the plugin into the directory that self.plugin_dir
+        # points to, in this case the local plugins/ directory
+        for plugin in self._db.get_all_plugins():
+    
+            path = self.clone_plugin(self.sample_plugin)
+
+        
+            # setup our plugin base and add the cloned plugin to it
+            plugin_base = PluginBase(package='test')
+            plugin_source = plugin_base.make_plugin_source(searchpath=[path])
+
+            # using the plugin_source we setup, this is the equivalent of:
+            # from slothtorrent_yts import main
+            if plugin == 'None':
+                continue
+
+            with plugin_source:
+                src = plugin_source.load_plugin('main')
+
+            # using main module from the slothtorrent_yts packe we imported:
+            # start a new thread and run it's init() method passing it our
+            # queue
+            t = threading.Thread(target=src.init, args=(self._queue,))
+            t.start()   # start the thread
+ 
 
     def _process_queue(self):
         while True:
