@@ -4,6 +4,7 @@ This file might eventually need broken into a seperate package,
 depending on how complex it gets.
 """
 
+from db import Database
 import configparser
 import os
 import threading
@@ -30,21 +31,22 @@ class Loader(object):
     def _load_plugins(self):
         # clone the plugin into the directory that self.plugin_dir
         # points to, in this case the local plugins/ directory
-        for plugin in self._db.get_all_plugins():
-            path = self.clone_plugin(self.sample_plugin)
-
+        plugins = self._db.get_all_plugins()
+        print(plugins)
+        for plugin, last_run in plugins:
+            try:
+                path = self.clone_plugin(plugin)
+            except:
+                continue
             # setup our plugin base and add the cloned plugin to it
             plugin_base = PluginBase(package='plugins')
             plugin_source = plugin_base.make_plugin_source(searchpath=[path])
-
             # using the plugin_source we setup, this is the equivalent of:
             # from slothtorrent_yts import main
             if plugin == 'None':
                 continue
-
             with plugin_source:
                 src = plugin_source.load_plugin('main')
-
             # using main module from the slothtorrent_yts packe we imported:
             # start a new thread and run it's init() method passing it our
             # queue
@@ -78,3 +80,8 @@ class Loader(object):
         if not os.path.exists(path):
             Repo.clone_from(url, path)
         return path
+
+
+if __name__ == '__main__':
+    db = Database('settings.conf')
+    Loader(db, 'settings.conf')
