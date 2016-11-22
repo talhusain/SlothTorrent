@@ -31,12 +31,10 @@ class Loader(object):
         # clone the plugin into the directory that self.plugin_dir
         # points to, in this case the local plugins/ directory
         for plugin in self._db.get_all_plugins():
-    
             path = self.clone_plugin(self.sample_plugin)
 
-        
             # setup our plugin base and add the cloned plugin to it
-            plugin_base = PluginBase(package='test')
+            plugin_base = PluginBase(package='plugins')
             plugin_source = plugin_base.make_plugin_source(searchpath=[path])
 
             # using the plugin_source we setup, this is the equivalent of:
@@ -51,8 +49,7 @@ class Loader(object):
             # start a new thread and run it's init() method passing it our
             # queue
             t = threading.Thread(target=src.init, args=(self._queue,))
-            t.start()   # start the thread
- 
+            t.start()
 
     def _process_queue(self):
         while True:
