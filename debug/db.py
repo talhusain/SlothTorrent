@@ -155,8 +155,8 @@ class Database(object):
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
-            cursor.execute(("SELECT %s FROM torrents where name like %s and comment like %s "),
-                           (crit, search_string,search_string))
+            cursor.execute(("SELECT * FROM torrents where name like %s and comment like %s "),
+                           (search_string,search_string))
             ret = cursor.fetchall()
         except psycopg2.ProgrammingError as e:
             print(e)
