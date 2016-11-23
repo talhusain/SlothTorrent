@@ -8,7 +8,7 @@ login_page = Blueprint('login_page', __name__)
 db = None
 
 
-class IndexController(object):
+class LoginController(object):
     def __init__(self, database):
         global db
         db = database

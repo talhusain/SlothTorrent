@@ -7,15 +7,15 @@ from flask import url_for
 
 torrent_page = Blueprint('torrent_page', __name__)
 db = None
-torrent_client = None
+client = None
 
 
 class TorrentController(object):
-    def __init__(self, db, torrent_client):
+    def __init__(self, database, torrent_client):
         global db
-        global torrent_client
-        db = db
-        torrent_client = torrent_client
+        global client
+        db = database
+        client = torrent_client
 
 
 @torrent_page.route('/torrent')
