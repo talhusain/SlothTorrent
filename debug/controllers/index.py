@@ -16,11 +16,11 @@ class IndexController(object):
 
 @index_page.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
-
-
-# left for testing purposes
-@index_page.route('/hello/')
-@index_page.route('/hello/<name>')
-def hello(name=None):
-    return render_template('index.html', name=name)
+    if request.method == 'POST':
+        # get search string from post data
+        # search db for torrents
+        # render template and pass it the returned torrents
+        return render_template('index.html')
+    else:
+        torrents = db.get_recent_torrents(25)
+        return render_template('index.html', torrents=torrents)
