@@ -1,1 +1,1 @@
-__all__ = ['message', 'test_message']
+__all__ = ['message', 'test_get_message']
