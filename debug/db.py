@@ -306,7 +306,20 @@ class Database(object):
         Returns:
             BOOL: success or failure
         """
-        pass
+        
+        connection = self.get_connection()
+        cursor = connection.cursor()
+        try:
+            cursor.execute( ("INSERT INTO plugins VALUES (%s, %s) "
+                             "ON CONFLICT (url) DO NOTHING"),
+                             (url, last_run) )
+        except psycopg2.ProgrammingError as e:
+            print(e)
+            return False
+        connection.commit()
+        cursor.close()
+        connection.close()
+        return True
 
     def remove_plugin(self, url):
         connection = self.get_connection()
