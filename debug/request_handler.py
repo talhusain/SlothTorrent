@@ -26,7 +26,7 @@ class RequestHandler(object):
         self.login_controller = LoginController(db)
         self.admin_controller = AdminController(db)
         self.torrent_controller = TorrentController(db, self.torrent_client)
-        app.run()
+        app.run(host='0.0.0.0')
 
 
 # serve static files from flask for dev purposes, nginx will be
