@@ -5,11 +5,7 @@ from message import *
 import socket
 import threading
 from struct import pack
-# import time
 from bitstring import BitArray
-# from math import ceil
-# import torrent
-# import message
 import random
 
 
@@ -44,16 +40,8 @@ class Session(threading.Thread):
             self.observer.close_session(self)
             return
 
-        self.receive_incoming()
-
         # spawn thread to start receiving messages
-        # incoming_t = threading.Thread(target=self.receive_incoming)
-        # incoming_t.start()
-
-        # schedule the keep-alive
-        # keepalive = Message.get_message('keep-alive')
-        # ka_t = threading.Timer(60, self.send_message, args=(keepalive,))
-        # ka_t.start()
+        threading.Thread(target=self.receive_incoming).start()
 
         while self.alive:
             continue
@@ -87,21 +75,22 @@ class Session(threading.Thread):
             return None
 
     def receive_incoming(self):
-        try:
-            self.lock.acquire()
-            data = self.socket.recv(2**14)
-            self.lock.release()
-            # print('received data of length %s: %s' % (len(data), data))
-            for byte in data:
-                self.message_queue.put(byte)
-            self.process_incoming_messages()
-        except Exception as e:
-            self.lock.release()
-            print('[%s] receive_incoming() - %s' % (self.peer[0], e))
-            self.observer.close_session(self)
-            self.alive = False
+        while self.alive:
+            try:
+                self.lock.acquire()
+                data = self.socket.recv(2**14)
+                self.lock.release()
+                if data:
+                    for byte in data:
+                        self.message_queue.put(byte)
+                    self.process_incoming()
+            except Exception as e:
+                self.lock.release()
+                print('[%s] receive_incoming() - %s' % (self.peer[0], e))
+                self.observer.close_session(self)
+                self.alive = False
 
-    def process_incoming_messages(self):
+    def process_incoming(self):
         while not self.message_queue.empty():
             msg = self.message_queue.get_message()
             if not msg:
@@ -115,7 +104,7 @@ class Session(threading.Thread):
             elif isinstance(msg, Choke):
                 self.choked = True
                 self.requesting_block = False
-                # self.send_message(Message.get_message('interested'))
+                self.send_message(Message.get_message('interested'))
             elif isinstance(msg, Have):
                 if not self.bitfield:
                     self.bitfield = BitArray(self.torrent.total_pieces * '0b0')
@@ -133,18 +122,22 @@ class Session(threading.Thread):
                 self.current_piece.add_block(int(msg.begin), msg.block)
                 if self.current_piece.complete():
                     print('FINISHED DOWNLOADING A PIECE')
+                    print('Total Progress: %s' %
+                          self.torrent.get_percent_complete())
                     self.torrent.bitfield[self.current_piece.index] = True
                     self.current_piece = None
+                if self.torrent.complete():
+                    print('FINISHED DOWNLOADING ENTIRE TORRENT')
+                    self.alive = False
                 self.request_piece()
-        if (self.message_queue.peek_length() and
-                self.message_queue.peek_length() > self.message_queue.qsize()):
-            self.receive_incoming()
 
     def request_piece(self):
         if (not self.bitfield) or self.requesting_block:
             return
         if not self.current_piece:
-            for index in range(len(self.bitfield)):
+            r = list(range(len(self.bitfield)))
+            random.shuffle(r)
+            for index in r:
                 if (self.bitfield[index] and
                         not self.torrent.bitfield[index]):
                     self.current_piece = self.torrent.piece[index]
@@ -175,7 +168,6 @@ class Session(threading.Thread):
             print('[%s] send_message() - %s' % (self.peer[0], e))
             self.observer.close_session(self)
             self.alive = False
-        self.receive_incoming()
 
     def __eq__(self, other):
         return (self.torrent == other.torrent and
