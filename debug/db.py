@@ -77,6 +77,9 @@ class Database(object):
                        "info_hash BYTEA REFERENCES torrents (info_hash) "
                        "ON UPDATE CASCADE ON DELETE CASCADE,"
                        "PRIMARY KEY (file_path, info_hash))")
+        cursor.execute("CREATE TABLE IF NOT EXISTS users"
+                       "(username TEXT, password TEXT)"
+                       "PRIMARY KEY (username)")
         self._connection.commit()
         self._connection.close()
 
@@ -351,3 +354,17 @@ class Database(object):
                                 host=self.ip,
                                 port=int(self.port),
                                 database=self.db_name)
+    def verifyUsers(self,username,password):
+        connection = self.get_connection()
+        cursor = connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s",(username,password,))
+            row = cursor.fetchone()
+            if row[0] == username and row[1] == password:
+                r = True
+            r = False
+        except:
+            r = False
+        connection.close()
+        return r
+

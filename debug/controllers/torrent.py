@@ -32,6 +32,9 @@ def cancel():
     # we can probably expect the info hash to be sent, but need to make
     # sure we can send raw bytes over html and have flask capture them,
     # otherwise it may make more send to send the Torrent.__hash__()
+    info_hash = request.form['info_hash']
+    db.get_torrent(info_hash)
+    client.cancel(torrent)
     return redirect(url_for('torrent_page.index'))
 
 
@@ -41,6 +44,9 @@ def resume():
     # we can probably expect the info hash to be sent, but need to make
     # sure we can send raw bytes over html and have flask capture them,
     # otherwise it may make more send to send the Torrent.__hash__()
+    info_hash = request.form['info_hash']
+    db.get_torrent(info_hash)
+    client.resume(torrent)
     return redirect(url_for('torrent_page.index'))
 
 
@@ -50,6 +56,9 @@ def pause():
     # we can probably expect the info hash to be sent, but need to make
     # sure we can send raw bytes over html and have flask capture them,
     # otherwise it may make more send to send the Torrent.__hash__()
+    info_hash = request.form['info_hash']
+    db.get_torrent(info_hash)
+    client.pause(torrent)
     return redirect(url_for('torrent_page.index'))
 
 
@@ -59,8 +68,10 @@ def add():
     # we can probably expect the info hash to be sent, but need to make
     # sure we can send raw bytes over html and have flask capture them,
     # otherwise it may make more send to send the Torrent.__hash__()
+    info_hash = request.form['info_hash']
+    db.get_torrent(info_hash)
+    client.start(torrent)
     return redirect(url_for('torrent_page.index'))
-
 
 @torrent_page.route('/torrent/retrieve', methods=['POST'])
 def retrieve():
