@@ -70,12 +70,14 @@
 
               <div class="title_right">
                 <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                <!--
                   <div class="input-group">
                     <input type="text" class="form-control" placeholder="Search for...">
                     <span class="input-group-btn">
                       <button class="btn btn-default" type="button">Go!</button>
                     </span>
                   </div>
+                  -->
                 </div>
               </div>
             </div>
@@ -115,8 +117,8 @@
                       <tbody>
                         {% for torrent in torrents %}
                         <tr>
-                          <td>{{ torrent.name }}</td>
-                          <td>{{ torrent.get_percent_complete() }}</td>
+                          <td>{{ torrent[0] }}</td>
+                          <td>{{ torrent[1] }}</td>
                           <td><button type="submit" class="btn-xs btn-success">Cancel</button></td>
                         </tr>
                         {% endfor %}
