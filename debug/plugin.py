@@ -98,8 +98,8 @@ class Loader(object):
                     if not r:
                         print('Error importing %s' % url)
                 except Exception as e:
-                    print(e)
-                    print('Encountered an exception importing %s' % url)
+                    # print(e)
+                    # print('Encountered an exception importing %s' % url)
                     pass
 
     def _parse_config(self):
