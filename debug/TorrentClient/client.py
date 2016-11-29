@@ -1,7 +1,24 @@
-from bencoding.bencode import encode, decode
-from .session import Session
-from .tracker import Tracker
-from .util import generate_peer_id
+from bencoding.bencode import decode
+try:
+    from .session import Session
+except:
+    from session import Session
+
+try:
+    from .tracker import Tracker
+except:
+    from tracker import Tracker
+
+try:
+    from .torrent import Status
+except:
+    from torrent import Status
+
+try:
+    from .util import generate_peer_id
+except:
+    from util import generate_peer_id
+
 import threading
 
 
@@ -12,21 +29,22 @@ class Client(object):
             self.download_location = 'torrent_downloads/'
         else:
             self.download_location = download_location
-        threading.Timer(120, self._keepalive_peers).start()
+        threading.Timer(60, self._keepalive_peers).start()
 
     def start(self, torrent):
-        print('start torrent called')
-        print(torrent)
-        print(torrent.trackers)
         torrent.status = 'downloading'
+        if torrent not in self._sessions:
+            self._sessions[torrent] = []
         for t in torrent.trackers:
             tracker = Tracker(t, torrent, generate_peer_id())
             for peer in tracker.get_peers():
+                print(peer)
                 session = Session(peer, torrent, self)
                 if torrent not in self._sessions:
                     self._sessions[torrent] = []
                 self._sessions[torrent].append(session)
                 session.start()
+                print('started session')
 
     def start_from_file(self, path):
         with open(path, 'rb') as f:
@@ -56,6 +74,8 @@ class Client(object):
     def _keepalive_peers(self):
         try:
             for torrent, sessions in self._sessions.items():
+                if torrent.status != Status.downloading:
+                    continue
                 session_to_add = []
                 for t in torrent.trackers:
                     tracker = Tracker(t, torrent, generate_peer_id())

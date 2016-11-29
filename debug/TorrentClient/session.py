@@ -1,7 +1,16 @@
 from bencoding.bencode import decode
-from .tracker import Tracker
-from .util import generate_peer_id
-from .message import *
+try:
+    from .tracker import Tracker
+except:
+    from tracker import Tracker
+try:
+    from .util import generate_peer_id
+except:
+    from util import generate_peer_id
+try:
+    from .message import *
+except:
+    from message import *
 import socket
 import threading
 from struct import pack

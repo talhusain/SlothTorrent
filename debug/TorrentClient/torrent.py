@@ -184,7 +184,6 @@ class Torrent(object):
         if b'announce-list' in self._dict:
             for trackers in self._dict[b'announce-list']:
                 for tracker in trackers:
-                    print(tracker)
                     try:
                         ret.append(tracker.decode('utf-8'))
                     except:
