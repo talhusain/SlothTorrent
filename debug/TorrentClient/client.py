@@ -35,16 +35,16 @@ class Client(object):
         torrent.status = 'downloading'
         if torrent not in self._sessions:
             self._sessions[torrent] = []
-        # for t in torrent.trackers:
-        #     tracker = Tracker(t, torrent, generate_peer_id())
-        #     for peer in tracker.get_peers():
-        #         print(peer)
-        #         session = Session(peer, torrent, self)
-        #         if torrent not in self._sessions:
-        #             self._sessions[torrent] = []
-        #         self._sessions[torrent].append(session)
-        #         session.start()
-        #         print('started session')
+        for t in torrent.trackers:
+            tracker = Tracker(t, torrent, generate_peer_id())
+            for peer in tracker.get_peers():
+                print(peer)
+                session = Session(peer, torrent, self)
+                if torrent not in self._sessions:
+                    self._sessions[torrent] = []
+                self._sessions[torrent].append(session)
+                session.start()
+                print('started session')
 
     def start_from_file(self, path):
         with open(path, 'rb') as f:
