@@ -22,8 +22,13 @@ class TorrentController(object):
 def index():
     # utilize the torrent_client to get the current list of torrents in
     # progress
-    return ('You is where torrents will be handled, and hopefully torrent info'
-            'will be displayed here')
+    x = db.get_torrent(b'\xf7\xfb\xaa\x14\x90\x97yE\xcf\xd5\xb8\x18\xb3\xcd\xb16\xce\xfd\xcb\x8e')
+    client.start(x)
+    r = ''
+    for t in client._sessions:
+        print(str(t))
+        r += str(t)
+    return r
 
 
 @torrent_page.route('/torrent/cancel', methods=['POST'])

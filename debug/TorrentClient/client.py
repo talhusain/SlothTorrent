@@ -1,7 +1,7 @@
-from bencoding import decode
-from session import Session
-from tracker import Tracker
-from util import generate_peer_id
+from bencoding.bencode import encode, decode
+from .session import Session
+from .tracker import Tracker
+from .util import generate_peer_id
 import threading
 
 
@@ -15,6 +15,9 @@ class Client(object):
         threading.Timer(120, self._keepalive_peers).start()
 
     def start(self, torrent):
+        print('start torrent called')
+        print(torrent)
+        print(torrent.trackers)
         torrent.status = 'downloading'
         for t in torrent.trackers:
             tracker = Tracker(t, torrent, generate_peer_id())

@@ -1,7 +1,7 @@
-from bencoding import decode
-from tracker import Tracker
-from util import generate_peer_id
-from message import *
+from bencoding.bencode import decode
+from .tracker import Tracker
+from .util import generate_peer_id
+from .message import *
 import socket
 import threading
 from struct import pack

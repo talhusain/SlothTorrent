@@ -253,7 +253,7 @@ class Database(object):
         torrent_dict = {b'comment': tup[2].encode("utf-8"),
                         b'created by': tup[3].encode("utf-8"),
                         b'creation_date': tup[4].timestamp(),
-                        b'announce-list': [u[0].encode("utf-8") for u in urls],
+                        b'announce-list': [[u[0].encode("utf-8")] for u in urls],
                         b'info': {b'name': tup[1].encode("utf-8"),
                                   b'piece length': tup[5],
                                   b'pieces': bytes(tup[6]),
