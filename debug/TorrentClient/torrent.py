@@ -32,19 +32,19 @@ class Piece(object):
     def add_block(self, offset, block):
         # we only need the actual space allocated if we are going to add
         # a block
-        if not self.piece:
-            self.piece = bytes(b'\x00' * self.length)
+        # if not self.piece:
+        #     self.piece = bytes(b'\x00' * self.length)
         self.bitfield[int(offset / self.block_length)] = True
-        piece = bytearray(self.piece)
-        piece[offset:self.block_length] = bytearray(block)
-        self.piece = bytes(piece)
+        # piece = bytearray(self.piece)
+        # piece[offset:self.block_length] = bytearray(block)
+        # self.piece = bytes(piece)
         if self.complete():
             print('Finished downloading piece %s' % self.index)
-            if sha1(self.piece).digest() == self.hash:
-                print('INFO HASH VERIFIED!!!')
-            else:
-                print('Error: Expected piece hash does not match')
-                print('%s != %s' % (sha1(self.piece).digest(), self.hash))
+            # if sha1(self.piece).digest() == self.hash:
+            #     print('INFO HASH VERIFIED!!!')
+            # else:
+            #     print('Error: Expected piece hash does not match')
+            #     print('%s != %s' % (sha1(self.piece).digest(), self.hash))
         print("Percent complete (Piece %s): %s" % (str(self.index),
                                                    str(self.get_percent_complete())))
 
