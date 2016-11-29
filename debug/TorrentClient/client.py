@@ -63,13 +63,17 @@ class Client(object):
 
     def _keepalive_peers(self):
         try:
+            print('keepalive called')
             for torrent, sessions in self._sessions.items():
                 # if torrent.status != Status.downloading:
                 #     continue
+                print('torrent')
                 session_to_add = []
                 for t in torrent.trackers:
+                    print(t)
                     tracker = Tracker(t, torrent, generate_peer_id())
                     for peer in tracker.get_peers():
+                        print(peer)
                         if peer not in [p.peer for p in sessions]:
                             print('adding new peer %s' % peer[0])
                             session_to_add.append(Session(peer, torrent, self))
