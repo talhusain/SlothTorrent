@@ -5,3 +5,4 @@ gitpython
 requests
 psycopg2
 pluginbase
+bitstring
