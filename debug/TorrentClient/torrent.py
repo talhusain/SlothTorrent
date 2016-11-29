@@ -206,10 +206,13 @@ class Torrent(object):
 
     def get_percent_complete(self):
         count = 0
-        for b in self.bitfield:
-            if b:
-                count += 1
-        return 100.0 * count / len(self.bitfield)
+        # for b in self.bitfield:
+        #     if b:
+        #         count += 1
+        # return 100.0 * count / len(self.bitfield)
+        for p in self.piece:
+            count += p.get_percent_complete()
+        return count / self.total_pieces
 
     def complete(self):
         return self.bitfield == BitArray(len(self.bitfield) * '0b1')
