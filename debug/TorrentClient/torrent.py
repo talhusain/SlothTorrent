@@ -1,4 +1,4 @@
-from bencoding import encode, decode
+from bencoding.bencode import encode, decode
 from datetime import datetime
 from hashlib import sha1
 from math import ceil
@@ -184,7 +184,10 @@ class Torrent(object):
         if b'announce-list' in self._dict:
             for trackers in self._dict[b'announce-list']:
                 for tracker in trackers:
-                    ret.append(tracker.decode('utf-8'))
+                    try:
+                        ret.append(tracker.decode('utf-8'))
+                    except:
+                        pass
         elif b'announce' in self._dict:
             ret.append(self._dict[b'announce'])
         return ret

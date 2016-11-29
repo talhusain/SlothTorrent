@@ -7,7 +7,7 @@ import configparser
 import psycopg2
 import os
 from bencoding.bencode import decode
-from torrent import Torrent
+from TorrentClient.torrent import Torrent
 import datetime
 
 DEBUG = True
@@ -151,18 +151,19 @@ class Database(object):
         Returns:
             list: A list of Torrent objects
         """
-        crit = 'info_hash,name,comment,created_by,creation_time,provider'
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
-            cursor.execute(("SELECT * FROM torrents where name like %s and comment like %s "),
-                           (search_string,search_string))
+            cursor.execute(("SELECT * FROM torrents where name like %s "
+                            "and comment like %s "),
+                           (search_string, search_string))
             ret = cursor.fetchall()
         except psycopg2.ProgrammingError as e:
             print(e)
             connection.rollback()
             ret = []
         return ret
+
     def import_torrent(self, torrent, provider):
         """Imports a torrent object into the database. This function
         should only be called by the plugin module once in production
@@ -224,15 +225,6 @@ class Database(object):
 
         connection = self.get_connection()
         cursor = connection.cursor()
-
-        SQL = "SELECT * FROM torrent_files WHERE info_hash = %s;"
-        try:
-            cursor.execute(SQL, (info_hash,))
-            torrent_files = cursor.fetchone()
-        except psycopg2.ProgrammingError as e:
-            print(e)
-            return None
-
         SQL = "SELECT * FROM torrents WHERE info_hash = %s;"
         try:
             cursor.execute(SQL, (info_hash,))
@@ -256,47 +248,28 @@ class Database(object):
         except psycopg2.ProgrammingError as e:
             print(e)
             return None
-
-        ######################### REFACTORING #########################
-
-        """
-        torrent = { b'info hash': bytes()
-
-                  }
-        """
-
-        ######################### REFACTORING #########################
-
-        torrent = {}
-        torrent[b'info hash'] = bytes(info_hash[0])
-        torrent[b'comment'] = tup[2].encode("utf-8")
-        torrent[b'created by'] = tup[3].encode("utf-8")
-        torrent[b'creation date'] = tup[4]
-
-        torrent[b'info'] = {}
-        torrent[b'info'][b'name'] = tup[1].encode("utf-8")
-        torrent[b'info'][b'piece length'] = bytes(tup[5])
-        torrent[b'info'][b'pieces'] = bytes(tup[6])
-
-        if (len(torrent_files) == 1):
-            torrent[b'info'][b'length'] = torrent_files[0][1]
-            torrent[b'announce'] = urls.encode("utf-8")
-        elif (len(torrent_files) > 1):
-            torrent[b'info'][b'files'] = []
-            for file in torrent_files:
-                torrent[b'info'][b'files'].append({b'path': [file[0].encode("utf-8")], b'length': file[1].encode("utf-8")})
-            announce_list = []
-            for tracker in urls:
-                announce_list.append(tracker[0].encode("utf-8"))
-            print(announce_list)
-            torrent[b'announce-list'] = announce_list
-
-        cursor.close()
         connection.close()
 
-        return Torrent(torrent)
+        torrent_dict = {b'comment': tup[2].encode("utf-8"),
+                        b'created by': tup[3].encode("utf-8"),
+                        b'creation_date': tup[4].timestamp(),
+                        b'announce-list': [u[0].encode("utf-8") for u in urls],
+                        b'info': {b'name': tup[1].encode("utf-8"),
+                                  b'piece length': tup[5],
+                                  b'pieces': bytes(tup[6]),
+                                  b'files': []
+                                  }
+                        }
+        # this can also be done with list comprehension but looks a bit
+        # cleaner in this format
+        for file in torrent_files:
+            file_dict = {b'path': [file[0].encode("utf-8")],
+                         b'length': int(file[1])}
+            torrent_dict[b'info'][b'files'].append(file_dict)
 
-    def add_plugin(self, url):
+        return Torrent(torrent_dict)
+
+    def add_plugin(self, url, last_run):
         """Add a plugin URL to the database
 
         Args:
@@ -309,9 +282,9 @@ class Database(object):
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
-            cursor.execute( ("INSERT INTO plugins VALUES (%s, %s) "
-                             "ON CONFLICT (url) DO NOTHING"),
-                             (url, last_run) )
+            cursor.execute(("INSERT INTO plugins VALUES (%s, %s) "
+                            "ON CONFLICT (url) DO NOTHING"),
+                           (url, last_run))
         except psycopg2.ProgrammingError as e:
             print(e)
             return False
@@ -350,3 +323,25 @@ class Database(object):
                                 host=self.ip,
                                 port=int(self.port),
                                 database=self.db_name)
+
+
+if __name__ == '__main__':
+    import pprint
+    pp = pprint.PrettyPrinter(indent=2)
+
+    db = Database('settings.conf')
+    torrent = db.get_torrent(b'\xf7\xfb\xaa\x14\x90\x97yE\xcf\xd5\xb8\x18\xb3\xcd\xb16\xce\xfd\xcb\x8e')
+    pp.pprint('name: %s' % torrent.name)
+    pp.pprint('info_hash: %s' % torrent.info_hash)
+    pp.pprint('comment: %s' % torrent.comment)
+    pp.pprint('status: %s' % torrent.status)
+    # pp.pprint('pieces: %s' % torrent.pieces)
+    pp.pprint('piece_length: %s' % torrent.piece_length)
+    pp.pprint('created_by: %s' % torrent.created_by)
+    pp.pprint('creation_date: %s' % torrent.creation_date)
+    pp.pprint('encoding: %s' % torrent.encoding)
+    pp.pprint('files: %s' % torrent.files)
+    pp.pprint('length: %s' % torrent.length)
+    pp.pprint('trackers: %s' % torrent.trackers)
+    pp.pprint('total_pieces: %s' % torrent.total_pieces)
+    pp.pprint('bitfield: %s' % torrent.bitfield)
