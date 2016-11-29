@@ -1,1 +1,1 @@
-__all__ = ['client', 'session', 'torrent', 'bencode', 'message', 'test_get_message']
+__all__ = ['client', 'session', 'torrent', 'bencode']
