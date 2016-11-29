@@ -176,7 +176,6 @@ class Database(object):
         Returns:
             BOOL: success or failure
         """
-        print(torrent)
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
@@ -222,10 +221,10 @@ class Database(object):
         Returns:
             Torrent: see torrent.py for more information
         """
-        
+
         connection = self.get_connection()
         cursor = connection.cursor()
-        
+
         SQL = "SELECT * FROM torrent_files WHERE info_hash = %s;"
         try:
             cursor.execute(SQL, (info_hash,))
@@ -262,7 +261,7 @@ class Database(object):
 
         """
         torrent = { b'info hash': bytes()
-                   
+
                   }
         """
 
@@ -294,7 +293,7 @@ class Database(object):
 
         cursor.close()
         connection.close()
-        
+
         return Torrent(torrent)
 
     def add_plugin(self, url):
@@ -306,7 +305,7 @@ class Database(object):
         Returns:
             BOOL: success or failure
         """
-        
+
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
