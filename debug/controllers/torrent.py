@@ -24,9 +24,8 @@ def index():
     # progress
     x = db.get_torrent(b'\xf7\xfb\xaa\x14\x90\x97yE\xcf\xd5\xb8\x18\xb3\xcd\xb16\xce\xfd\xcb\x8e')
     client.start(x)
-    torrents = [(t.name, t.get_percent_complete())
-                for t in list(client._sessions)]
-    return render_template('index.html', torrents=torrents)
+    torrents = list(client._sessions)
+    return render_template('torrent.html', torrents=torrents)
 
 
 @torrent_page.route('/torrent/cancel', methods=['POST'])
