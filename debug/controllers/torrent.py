@@ -27,7 +27,7 @@ def index():
     r = ''
     for t in client._sessions:
         print(str(t))
-        r += str(t)
+        r += str(t) + ' ' + str(t.get_percent_complete()) + '%'
     return r
 
 
