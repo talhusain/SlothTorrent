@@ -77,7 +77,8 @@ class Client(object):
                 for s in session_to_add:
                     s.start()
                     self._sessions[torrent].append(s)
-        except:
+        except Exception as e:
+            print(e)
             pass
 
     def get_sessions(self):
