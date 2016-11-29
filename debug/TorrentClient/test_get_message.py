@@ -111,23 +111,23 @@ class TestGetMessage(unittest.TestCase):
     	self.assertEqual(isinstance(msg, BitField), True)
 
     def test_bitfield__to_bytes(self):
-        bitfield = [2 * 4, 2 * 8]
-        bitfield_b = b'\x00\x00\x00\x03\x05\x08\x10'
+        bitfield = [2 ** 4, 2 ** 4]
+        bitfield_b = b'\x00\x00\x00\x03\x05\x10\x10'
         msg_b = Message.get_message('bitfield', None, None, None, None, None, bitfield).to_bytes()
         self.assertEqual(msg_b, bitfield_b)
 
     def test_bitfield__length(self):
-        bitfield = '1111111011111111'
+        bitfield = [2 ** 3, 2 ** 4]
         msg = Message.get_message('bitfield', None, None, None, None, None, bitfield)
         self.assertEqual(msg.length, 1 + len(bitfield))
 
     def test_bitfield__id(self):
-        bitfield = '1111111011111111'
+        bitfield = [2 ** 3, 2 ** 4]
         msg = Message.get_message('bitfield', None, None, None, None, None, bitfield)
         self.assertEqual(msg.id, 5)
 
     def test_bitfield__bitfield(self):
-        bitfield = '1111111011111111'
+        bitfield = [2 ** 3, 2 ** 4]
         msg = Message.get_message('bitfield', None, None, None, None, None, bitfield)
         self.assertEqual(msg.bitfield, bitfield)
 
@@ -136,8 +136,8 @@ class TestGetMessage(unittest.TestCase):
     	self.assertEqual(msg, Request(0, 1, 2 ** 8))
 
     def test_request__to_bytes(self):
-        bitfield = [2 * 4, 2 * 8]
-        bitfield_b = b'\x00\x00\x00\x03\x05\x08\x10'
+        bitfield = [2 ** 4, 2 ** 4]
+        bitfield_b = b'\x00\x00\x00\x03\x05\x10\x10'
         msg_b = Message.get_message('bitfield', None, None, None, None, None, bitfield).to_bytes()
         self.assertEqual(msg_b, bitfield_b)
 
