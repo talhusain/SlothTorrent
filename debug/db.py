@@ -39,7 +39,6 @@ class Database(object):
         # self.remove_plugin("https://github.com/BadStreff/slothtorrent_yts")
         # self._add_fake_torrents()
         # self._add_sample_torrents()
-        print(self.search_torrents("suicide"))
         self._connection.close()
 
     def _drop_all_tables(self):
