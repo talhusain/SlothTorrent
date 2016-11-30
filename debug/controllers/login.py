@@ -20,7 +20,9 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        print(username, password)
         check = db.verifyUsers(username,password)
+        print(check)
         if check:
             session[username]=request.form[username]
             return redirect(url_for('admin_page.index', name=username))
