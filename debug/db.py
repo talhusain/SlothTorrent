@@ -78,8 +78,7 @@ class Database(object):
                        "ON UPDATE CASCADE ON DELETE CASCADE,"
                        "PRIMARY KEY (file_path, info_hash))")
         cursor.execute("CREATE TABLE IF NOT EXISTS users "
-                       "(username TEXT, password TEXT), "
-                       "PRIMARY KEY (username)")
+                       "(username TEXT PRIMARY KEY, password TEXT)")
         self._connection.commit()
         self._connection.close()
 
