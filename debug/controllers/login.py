@@ -25,7 +25,7 @@ def login():
         print(check)
         if check:
             session[username]=request.form[username]
-            return redirect('/admin')
+            return redirect('admin')
     return '''
     <form action="" method="post">
         <p><input type=text name=username>
