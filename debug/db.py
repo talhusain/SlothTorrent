@@ -363,4 +363,3 @@ if __name__ == '__main__':
     pp.pprint('trackers: %s' % torrent.trackers)
     pp.pprint('total_pieces: %s' % torrent.total_pieces)
     pp.pprint('bitfield: %s' % torrent.bitfield)
->>>>>>> upstream/dev
