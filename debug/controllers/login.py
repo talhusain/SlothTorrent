@@ -24,7 +24,7 @@ def login():
         check = db.verifyUsers(username,password)
         print(check)
         if check:
-            # session[username]=request.form[username]
+            session['username'] = request.form['username']
             return redirect(url_for('admin_page.index'))
     return '''
     <form action="" method="post">
