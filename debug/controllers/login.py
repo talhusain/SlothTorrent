@@ -24,12 +24,12 @@ def login():
         if check:
             session[username]=request.form[username]
             return redirect(url_for('admin_page.index', name=username))
-        return '''
-        <form action="" method="post">
-            <p><input type=text name=username>
-            <p><input type=submit value=Login>
-        </form>
-               '''
+    return '''
+    <form action="" method="post">
+        <p><input type=text name=username>
+        <p><input type=submit value=Login>
+    </form>
+           '''
 # use the db to verify the credentials
         # if successful, issue session and redirect to admin page
         # if fail, return error page
