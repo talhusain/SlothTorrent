@@ -72,6 +72,7 @@ def add():
     # otherwise it may make more send to send the Torrent.__hash__()
     info_hash = request.form['info_hash']
     torrent = db.get_torrent(bytes.fromhex(info_hash))
+    print(torrent._dict)
     client.start(torrent)
     return redirect(url_for('torrent_page.index'))
 
