@@ -26,6 +26,7 @@ class RequestHandler(object):
         self.login_controller = LoginController(db)
         self.admin_controller = AdminController(db)
         self.torrent_controller = TorrentController(db, self.torrent_client)
+        app.secret_key = 'A0Zr98j/3yX R~XIH?jmN]LWX/,?RT'
         app.run(host='0.0.0.0')
 
 
