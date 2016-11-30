@@ -30,12 +30,27 @@ class Client(object):
             self.download_location = 'torrent_downloads/'
         else:
             self.download_location = download_location
-        threading.Thread(target=self._keepalive_peers).start()
+        threading.Timer(300, self._keepalive_peers).start()
 
     def start(self, torrent):
         torrent.status = 'downloading'
         if torrent not in self._sessions:
             self._sessions[torrent] = []
+        # if torrent.status != Status.downloading:
+        #     continue
+        session_to_add = []
+        for t in torrent.trackers:
+            print(t)
+            tracker = Tracker(t, torrent, generate_peer_id())
+            for peer in tracker.get_peers():
+                print(peer)
+                if peer not in [p.peer for p in sessions]:
+                    print('adding new peer %s' % peer[0])
+                    session_to_add.append(Session(peer, torrent, self))
+                    # self._sessions[torrent].append(session)
+        for s in session_to_add:
+            s.start()
+            self._sessions[torrent].append(s)
 
     def start_from_file(self, path):
         with open(path, 'rb') as f:
@@ -63,30 +78,28 @@ class Client(object):
         pass
 
     def _keepalive_peers(self):
-        while True:
-            try:
-                print('keepalive called')
-                for torrent, sessions in self._sessions.items():
-                    # if torrent.status != Status.downloading:
-                    #     continue
-                    print('torrent')
-                    session_to_add = []
-                    for t in torrent.trackers:
-                        print(t)
-                        tracker = Tracker(t, torrent, generate_peer_id())
-                        for peer in tracker.get_peers():
-                            print(peer)
-                            if peer not in [p.peer for p in sessions]:
-                                print('adding new peer %s' % peer[0])
-                                session_to_add.append(Session(peer, torrent, self))
-                                # self._sessions[torrent].append(session)
-                    for s in session_to_add:
-                        s.start()
-                        self._sessions[torrent].append(s)
-            except Exception as e:
-                print(e)
-                pass
-            time.sleep(60)
+        try:
+            print('keepalive called')
+            for torrent, sessions in self._sessions.items():
+                # if torrent.status != Status.downloading:
+                #     continue
+                print('torrent')
+                session_to_add = []
+                for t in torrent.trackers:
+                    print(t)
+                    tracker = Tracker(t, torrent, generate_peer_id())
+                    for peer in tracker.get_peers():
+                        print(peer)
+                        if peer not in [p.peer for p in sessions]:
+                            print('adding new peer %s' % peer[0])
+                            session_to_add.append(Session(peer, torrent, self))
+                            # self._sessions[torrent].append(session)
+                for s in session_to_add:
+                    s.start()
+                    self._sessions[torrent].append(s)
+        except Exception as e:
+            print(e)
+            pass
 
     def get_sessions(self):
         return self.sessions
