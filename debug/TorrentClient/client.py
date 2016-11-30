@@ -86,7 +86,7 @@ class Client(object):
             except Exception as e:
                 print(e)
                 pass
-            time.sleep(15)
+            time.sleep(60)
 
     def get_sessions(self):
         return self.sessions
