@@ -331,7 +331,7 @@ class Database(object):
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
-            cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s",(username,password,))
+            cursor.execute("SELECT * FROM users WHERE username = '%s'" % (username,))
             row = cursor.fetchone()
             if row[0] == username and row[1] == password:
                 r = True
