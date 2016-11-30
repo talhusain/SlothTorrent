@@ -74,7 +74,7 @@ def add():
     torrent = db.get_torrent(bytes.fromhex(info_hash))
     # print(torrent._dict)
     client.start(torrent)
-    return redirect(url_for('torrent_page.index'))
+    # return redirect(url_for('torrent_page.index'))
 
 @torrent_page.route('/torrent/retrieve', methods=['POST'])
 def retrieve():
