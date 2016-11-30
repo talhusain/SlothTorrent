@@ -33,7 +33,7 @@ class Database(object):
         self.db_name = config['DATABASE']['db']
 
         # Establish connection object initialize tables
-        # self._drop_all_tables()
+        self._drop_all_tables()
         self._initialize_tables()
         # self.add_fake_plugin()
         # self.remove_plugin("https://github.com/BadStreff/slothtorrent_yts")
@@ -45,7 +45,6 @@ class Database(object):
         self._connection = self.get_connection()
         cursor = self._connection.cursor()
         cursor.execute(("DROP TABLE IF EXISTS torrents, "
-                        "plugins, "
                         "announcers, "
                         "torrent_files"))
         self._connection.commit()
@@ -77,9 +76,8 @@ class Database(object):
                        "info_hash BYTEA REFERENCES torrents (info_hash) "
                        "ON UPDATE CASCADE ON DELETE CASCADE,"
                        "PRIMARY KEY (file_path, info_hash))")
-        cursor.execute("CREATE TABLE IF NOT EXISTS users"
-                       "(username TEXT, password TEXT)"
-                       "PRIMARY KEY (username)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS users "
+                       "(username TEXT PRIMARY KEY, password TEXT)")
         self._connection.commit()
         self._connection.close()
 
@@ -117,11 +115,10 @@ class Database(object):
         Returns:
             list: A list of Torrent objects
         """
-        crit = 'info_hash,name,comment,created_by,creation_time,provider'
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
-            cursor.execute(("SELECT " + crit + " FROM torrents ORDER BY "
+            cursor.execute(("SELECT * FROM torrents ORDER BY "
                             "creation_time DESC limit %s"),
                            (number,))
             ret = cursor.fetchall()
@@ -157,9 +154,8 @@ class Database(object):
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
-            cursor.execute(("SELECT * FROM torrents where name like %s "
-                            "and comment like %s "),
-                           (search_string, search_string))
+            cursor.execute(("SELECT * FROM torrents where LOWER(name) like LOWER('%%%s%%')" %
+                           (search_string,)))
             ret = cursor.fetchall()
         except psycopg2.ProgrammingError as e:
             print(e)
@@ -195,6 +191,8 @@ class Database(object):
                             torrent.pieces,
                             provider))
             for tracker in torrent.trackers:
+                if isinstance(tracker, bytes):
+                    tracker = tracker.decode('utf-8')
                 cursor.execute(("INSERT INTO announcers VALUES (%s, %s) "
                                 "ON CONFLICT (url, info_hash) DO NOTHING"),
                                (tracker, torrent.info_hash))
@@ -256,7 +254,8 @@ class Database(object):
         torrent_dict = {b'comment': tup[2].encode("utf-8"),
                         b'created by': tup[3].encode("utf-8"),
                         b'creation_date': tup[4].timestamp(),
-                        b'announce-list': [u[0].encode("utf-8") for u in urls],
+                        b'announce-list': [[u[0].encode("utf-8")]
+                                           for u in urls],
                         b'info': {b'name': tup[1].encode("utf-8"),
                                   b'piece length': tup[5],
                                   b'pieces': bytes(tup[6]),
@@ -326,22 +325,21 @@ class Database(object):
                                 host=self.ip,
                                 port=int(self.port),
                                 database=self.db_name)
-<<<<<<< HEAD
+
     def verifyUsers(self,username,password):
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
-            cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s",(username,password,))
+            cursor.execute("SELECT * FROM users WHERE username = '%s'" % (username,))
             row = cursor.fetchone()
             if row[0] == username and row[1] == password:
                 r = True
-            r = False
+            else:
+                r = False
         except:
             r = False
         connection.close()
         return r
-
-=======
 
 
 if __name__ == '__main__':
@@ -364,4 +362,3 @@ if __name__ == '__main__':
     pp.pprint('trackers: %s' % torrent.trackers)
     pp.pprint('total_pieces: %s' % torrent.total_pieces)
     pp.pprint('bitfield: %s' % torrent.bitfield)
->>>>>>> upstream/dev

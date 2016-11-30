@@ -1,5 +1,5 @@
 import socket
-from bencoding import decode
+from bencoding.bencode import decode
 import requests
 from struct import unpack
 

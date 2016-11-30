@@ -1,7 +1,16 @@
-from bencoding import decode
-from tracker import Tracker
-from util import generate_peer_id
-from message import *
+from bencoding.bencode import decode
+try:
+    from .tracker import Tracker
+except:
+    from tracker import Tracker
+try:
+    from .util import generate_peer_id
+except:
+    from util import generate_peer_id
+try:
+    from .message import *
+except:
+    from message import *
 import socket
 import threading
 from struct import pack
@@ -136,7 +145,7 @@ class Session(threading.Thread):
             return
         if not self.current_piece:
             r = list(range(len(self.bitfield)))
-            random.shuffle(r)
+            # random.shuffle(r)
             for index in r:
                 if (self.bitfield[index] and
                         not self.torrent.bitfield[index]):

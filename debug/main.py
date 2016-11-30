@@ -5,6 +5,7 @@ should happen only once on start up and initializing the Request Handlerobject.
 
 from db import Database
 from request_handler import RequestHandler
+from TorrentClient.client import Client
 import plugin
 
 
@@ -16,8 +17,10 @@ def main():
     # populating the database
     plugin.Loader(db, 'settings.conf')
 
+    client = Client()
+
     # Initialize the request handler and start taking http requests
-    RequestHandler(db)
+    RequestHandler(db, client)
 
 
 if __name__ == '__main__':

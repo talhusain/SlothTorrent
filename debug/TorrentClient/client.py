@@ -1,8 +1,26 @@
-from bencoding import decode
-from session import Session
-from tracker import Tracker
-from util import generate_peer_id
+from bencoding.bencode import decode
+try:
+    from .session import Session
+except:
+    from session import Session
+
+try:
+    from .tracker import Tracker
+except:
+    from tracker import Tracker
+
+try:
+    from .torrent import Status
+except:
+    from torrent import Status
+
+try:
+    from .util import generate_peer_id
+except:
+    from util import generate_peer_id
+
 import threading
+import time
 
 
 class Client(object):
@@ -12,10 +30,11 @@ class Client(object):
             self.download_location = 'torrent_downloads/'
         else:
             self.download_location = download_location
-        threading.Timer(120, self._keepalive_peers).start()
+        threading.Timer(300, self._keepalive_peers).start()
 
     def start(self, torrent):
         torrent.status = 'downloading'
+        # print(torrent._dict)
         for t in torrent.trackers:
             tracker = Tracker(t, torrent, generate_peer_id())
             for peer in tracker.get_peers():
@@ -52,11 +71,17 @@ class Client(object):
 
     def _keepalive_peers(self):
         try:
+            print('keepalive called')
             for torrent, sessions in self._sessions.items():
+                # if torrent.status != Status.downloading:
+                #     continue
+                print('torrent')
                 session_to_add = []
                 for t in torrent.trackers:
+                    print(t)
                     tracker = Tracker(t, torrent, generate_peer_id())
                     for peer in tracker.get_peers():
+                        print(peer)
                         if peer not in [p.peer for p in sessions]:
                             print('adding new peer %s' % peer[0])
                             session_to_add.append(Session(peer, torrent, self))
@@ -64,7 +89,8 @@ class Client(object):
                 for s in session_to_add:
                     s.start()
                     self._sessions[torrent].append(s)
-        except:
+        except Exception as e:
+            print(e)
             pass
 
     def get_sessions(self):

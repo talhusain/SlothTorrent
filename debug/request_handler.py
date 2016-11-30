@@ -19,13 +19,15 @@ app.register_blueprint(login_page)
 
 class RequestHandler(object):
 
-    def __init__(self, db):
+    def __init__(self, db, torrent_client):
         self.db = db
+        self.torrent_client = torrent_client
         self.index_controller = IndexController(db)
         self.login_controller = LoginController(db)
         self.admin_controller = AdminController(db)
-        self.torrent_controller = TorrentController(db, None)
-        app.run()
+        self.torrent_controller = TorrentController(db, self.torrent_client)
+        app.secret_key = 'A0Zr98j/3yX R~XIH?jmN]LWX/,?RT'
+        app.run(host='0.0.0.0')
 
 
 # serve static files from flask for dev purposes, nginx will be

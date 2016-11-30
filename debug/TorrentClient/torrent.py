@@ -32,19 +32,19 @@ class Piece(object):
     def add_block(self, offset, block):
         # we only need the actual space allocated if we are going to add
         # a block
-        if not self.piece:
-            self.piece = bytes(b'\x00' * self.length)
+        # if not self.piece:
+        #     self.piece = bytes(b'\x00' * self.length)
         self.bitfield[int(offset / self.block_length)] = True
-        piece = bytearray(self.piece)
-        piece[offset:self.block_length] = bytearray(block)
-        self.piece = bytes(piece)
+        # piece = bytearray(self.piece)
+        # piece[offset:self.block_length] = bytearray(block)
+        # self.piece = bytes(piece)
         if self.complete():
             print('Finished downloading piece %s' % self.index)
-            if sha1(self.piece).digest() == self.hash:
-                print('INFO HASH VERIFIED!!!')
-            else:
-                print('Error: Expected piece hash does not match')
-                print('%s != %s' % (sha1(self.piece).digest(), self.hash))
+            # if sha1(self.piece).digest() == self.hash:
+            #     print('INFO HASH VERIFIED!!!')
+            # else:
+            #     print('Error: Expected piece hash does not match')
+            #     print('%s != %s' % (sha1(self.piece).digest(), self.hash))
         print("Percent complete (Piece %s): %s" % (str(self.index),
                                                    str(self.get_percent_complete())))
 
@@ -189,7 +189,7 @@ class Torrent(object):
                     except:
                         pass
         elif b'announce' in self._dict:
-            ret.append(self._dict[b'announce'])
+            ret.append(self._dict[b'announce'].decode('utf-8'))
         return ret
 
     @property
@@ -210,6 +210,9 @@ class Torrent(object):
             if b:
                 count += 1
         return 100.0 * count / len(self.bitfield)
+        # for p in self.piece:
+        #     count += p.get_percent_complete()
+        # return count / self.total_pieces
 
     def complete(self):
         return self.bitfield == BitArray(len(self.bitfield) * '0b1')
@@ -242,7 +245,7 @@ if __name__ == '__main__':
             pp.pprint('info_hash: %s' % torrent.info_hash)
             pp.pprint('comment: %s' % torrent.comment)
             pp.pprint('status: %s' % torrent.status)
-            pp.pprint('pieces: %s' % torrent.pieces)
+            # pp.pprint('pieces: %s' % torrent.pieces)
             pp.pprint('piece_length: %s' % torrent.piece_length)
             pp.pprint('created_by: %s' % torrent.created_by)
             pp.pprint('creation_date: %s' % torrent.creation_date)

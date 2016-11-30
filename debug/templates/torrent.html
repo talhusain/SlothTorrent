@@ -21,7 +21,6 @@
 
     <!-- Custom Theme Style -->
     <link href="static/build/css/custom.css" rel="stylesheet">
-
   </head>
 
   <body class="nav-md">
@@ -71,10 +70,14 @@
 
               <div class="title_right">
                 <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-                  <form action="" method="post">
-                    <p><input type=text name=query>
-                    <p><input type=submit value=Search>
-                  </form>
+                <!--
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search for...">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" type="button">Go!</button>
+                    </span>
+                  </div>
+                  -->
                 </div>
               </div>
             </div>
@@ -84,7 +87,7 @@
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Search Query Here <small>6512 torrents</small></h2>
+                    <h2>Progress <small>please don't break... :(</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -106,19 +109,17 @@
                     <table class="table table-striped">
                       <thead>
                         <tr>
-                          <th>#</th>
                           <th>name</th>
-                          <th>info_hash</th>
+                          <th>progress</th>
                           <th></th>
                         </tr>
                       </thead>
                       <tbody>
                         {% for torrent in torrents %}
                         <tr>
-                          <th scope="row">{{loop.index}}</th>
-                          <td>{{ torrent[1] }}</td>
-                          <td class="info_hash">{{ torrent[0].tobytes().hex() }}</td>
-                          <td><button type="submit" class="btn-xs btn-success">Queue Download</button></td>
+                          <td>{{ torrent.name }}</td>
+                          <td>{{ torrent.get_percent_complete() }}</td>
+                          <td><button type="submit" class="btn-xs btn-success">Cancel</button></td>
                         </tr>
                         {% endfor %}
                       </tbody>
@@ -143,8 +144,5 @@
 
     <!-- Custom Theme Scripts -->
     <script src="static/build/js/custom.min.js"></script>
-
-    <!-- Custom JavaScript -->
-    <script src="static/js/torrent.js"></script>
   </body>
 </html>
