@@ -77,8 +77,8 @@ class Database(object):
                        "info_hash BYTEA REFERENCES torrents (info_hash) "
                        "ON UPDATE CASCADE ON DELETE CASCADE,"
                        "PRIMARY KEY (file_path, info_hash))")
-        cursor.execute("CREATE TABLE IF NOT EXISTS users"
-                       "(username TEXT, password TEXT)"
+        cursor.execute("CREATE TABLE IF NOT EXISTS users "
+                       "(username TEXT, password TEXT), "
                        "PRIMARY KEY (username)")
         self._connection.commit()
         self._connection.close()
