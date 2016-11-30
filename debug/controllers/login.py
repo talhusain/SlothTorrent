@@ -27,6 +27,7 @@ def login():
     return '''
     <form action="" method="post">
         <p><input type=text name=username>
+        <p><input type=password name=password>
         <p><input type=submit value=Login>
     </form>
            '''
