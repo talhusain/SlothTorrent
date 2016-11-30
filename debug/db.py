@@ -39,6 +39,7 @@ class Database(object):
         # self.remove_plugin("https://github.com/BadStreff/slothtorrent_yts")
         # self._add_fake_torrents()
         # self._add_sample_torrents()
+        print(self.search_torrents("suicide"))
         self._connection.close()
 
     def _drop_all_tables(self):
@@ -116,11 +117,10 @@ class Database(object):
         Returns:
             list: A list of Torrent objects
         """
-        crit = 'info_hash,name,comment,created_by,creation_time,provider'
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
-            cursor.execute(("SELECT " + crit + " FROM torrents ORDER BY "
+            cursor.execute(("SELECT * FROM torrents ORDER BY "
                             "creation_time DESC limit %s"),
                            (number,))
             ret = cursor.fetchall()
@@ -156,9 +156,8 @@ class Database(object):
         connection = self.get_connection()
         cursor = connection.cursor()
         try:
-            cursor.execute(("SELECT * FROM torrents where name like %s "
-                            "and comment like %s "),
-                           (search_string, search_string))
+            cursor.execute(("SELECT * FROM torrents where LOWER(name) like LOWER('%%%s%%')" %
+                           (search_string,)))
             ret = cursor.fetchall()
         except psycopg2.ProgrammingError as e:
             print(e)

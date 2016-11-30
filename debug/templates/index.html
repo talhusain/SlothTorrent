@@ -21,6 +21,7 @@
 
     <!-- Custom Theme Style -->
     <link href="static/build/css/custom.css" rel="stylesheet">
+
   </head>
 
   <body class="nav-md">
@@ -70,12 +71,10 @@
 
               <div class="title_right">
                 <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-                  <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search for...">
-                    <span class="input-group-btn">
-                      <button class="btn btn-default" type="button">Go!</button>
-                    </span>
-                  </div>
+                  <form action="" method="post">
+                    <p><input type=text name=query>
+                    <p><input type=submit value=Search>
+                  </form>
                 </div>
               </div>
             </div>
@@ -109,6 +108,7 @@
                         <tr>
                           <th>#</th>
                           <th>name</th>
+                          <th>info_hash</th>
                           <th></th>
                         </tr>
                       </thead>
@@ -117,6 +117,7 @@
                         <tr>
                           <th scope="row">{{loop.index}}</th>
                           <td>{{ torrent[1] }}</td>
+                          <td class="info_hash">{{ torrent[0].tobytes().hex() }}</td>
                           <td><button type="submit" class="btn-xs btn-success">Queue Download</button></td>
                         </tr>
                         {% endfor %}
@@ -142,5 +143,8 @@
 
     <!-- Custom Theme Scripts -->
     <script src="static/build/js/custom.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="static/js/torrent.js"></script>
   </body>
 </html>

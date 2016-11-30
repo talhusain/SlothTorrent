@@ -20,7 +20,9 @@ def index():
         # get search string from post data
         # search db for torrents
         # render template and pass it the returned torrents
-        return render_template('index.html')
+        query = request.form['query']
+        torrents = db.search_torrents(query)
+        return render_template('index.html', torrents=torrents)
     else:
         torrents = db.get_recent_torrents(25)
         return render_template('index.html', torrents=torrents)
