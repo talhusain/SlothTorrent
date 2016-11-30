@@ -15,7 +15,7 @@ $(document).ready(function(){
         $.post('/torrent/add', {'info_hash': $item}).done(function(result){
                 console.log("Response: " + result + "\n");
         });
-        e.preventDefault();
+        // e.preventDefault();
     });
 
 });
