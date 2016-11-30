@@ -145,7 +145,7 @@ class Session(threading.Thread):
             return
         if not self.current_piece:
             r = list(range(len(self.bitfield)))
-            random.shuffle(r)
+            # random.shuffle(r)
             for index in r:
                 if (self.bitfield[index] and
                         not self.torrent.bitfield[index]):

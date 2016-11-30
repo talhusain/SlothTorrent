@@ -33,7 +33,7 @@ class Database(object):
         self.db_name = config['DATABASE']['db']
 
         # Establish connection object initialize tables
-        # self._drop_all_tables()
+        self._drop_all_tables()
         self._initialize_tables()
         # self.add_fake_plugin()
         # self.remove_plugin("https://github.com/BadStreff/slothtorrent_yts")
@@ -45,7 +45,6 @@ class Database(object):
         self._connection = self.get_connection()
         cursor = self._connection.cursor()
         cursor.execute(("DROP TABLE IF EXISTS torrents, "
-                        "plugins, "
                         "announcers, "
                         "torrent_files"))
         self._connection.commit()
@@ -192,6 +191,8 @@ class Database(object):
                             torrent.pieces,
                             provider))
             for tracker in torrent.trackers:
+                if isinstance(tracker, bytes):
+                    tracker = tracker.decode('utf-8')
                 cursor.execute(("INSERT INTO announcers VALUES (%s, %s) "
                                 "ON CONFLICT (url, info_hash) DO NOTHING"),
                                (tracker, torrent.info_hash))

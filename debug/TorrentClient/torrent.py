@@ -189,7 +189,7 @@ class Torrent(object):
                     except:
                         pass
         elif b'announce' in self._dict:
-            ret.append(self._dict[b'announce'])
+            ret.append(self._dict[b'announce'].decode('utf-8'))
         return ret
 
     @property
@@ -206,13 +206,13 @@ class Torrent(object):
 
     def get_percent_complete(self):
         count = 0
-        # for b in self.bitfield:
-        #     if b:
-        #         count += 1
-        # return 100.0 * count / len(self.bitfield)
-        for p in self.piece:
-            count += p.get_percent_complete()
-        return count / self.total_pieces
+        for b in self.bitfield:
+            if b:
+                count += 1
+        return 100.0 * count / len(self.bitfield)
+        # for p in self.piece:
+        #     count += p.get_percent_complete()
+        # return count / self.total_pieces
 
     def complete(self):
         return self.bitfield == BitArray(len(self.bitfield) * '0b1')
@@ -245,7 +245,7 @@ if __name__ == '__main__':
             pp.pprint('info_hash: %s' % torrent.info_hash)
             pp.pprint('comment: %s' % torrent.comment)
             pp.pprint('status: %s' % torrent.status)
-            pp.pprint('pieces: %s' % torrent.pieces)
+            # pp.pprint('pieces: %s' % torrent.pieces)
             pp.pprint('piece_length: %s' % torrent.piece_length)
             pp.pprint('created_by: %s' % torrent.created_by)
             pp.pprint('creation_date: %s' % torrent.creation_date)
