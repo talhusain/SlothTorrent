@@ -327,7 +327,7 @@ class Database(object):
                                 host=self.ip,
                                 port=int(self.port),
                                 database=self.db_name)
-<<<<<<< HEAD
+
     def verifyUsers(self,username,password):
         connection = self.get_connection()
         cursor = connection.cursor()
@@ -341,8 +341,6 @@ class Database(object):
             r = False
         connection.close()
         return r
-
-=======
 
 
 if __name__ == '__main__':
