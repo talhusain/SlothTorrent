@@ -335,7 +335,8 @@ class Database(object):
             row = cursor.fetchone()
             if row[0] == username and row[1] == password:
                 r = True
-            r = False
+            else:
+                r = False
         except:
             r = False
         connection.close()
